@@ -13,7 +13,7 @@ import org.taymyr.lagom.javadsl.api.transport.MessageProtocols.JSON
 object ResponseHeaders {
 
     @JvmField
-    val OK_JSON = OK.withProtocol(JSON)
+    val OK_JSON = OK.withProtocol(JSON)!!
 
     /**
      *

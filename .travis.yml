@@ -15,6 +15,9 @@ install: ./mvnw dependency:resolve dependency:resolve-plugins -B -V
 
 script: ./mvnw verify -B -V
 
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
 deploy:
   # Deploy releases
   - provider: script

@@ -57,7 +57,7 @@ object MessageProtocols {
      */
     @JvmStatic
     fun fromFile(file: String, def: MessageProtocol?): MessageProtocol? {
-        return when (file.substringAfterLast('.')) {
+        return when (file.substringAfterLast('.', "").toLowerCase()) {
             "json" -> JSON
             "yaml", "yml" -> YAML
             else -> def
