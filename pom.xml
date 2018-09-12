@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.taymyr</groupId>
   <artifactId>lagom-extensions</artifactId>
-  <version>0.0.2-SNAPSHOT</version>
+  <version>0.0.2</version>
   <packaging>jar</packaging>
   <name>Lagom Extensions</name>
 
@@ -33,6 +33,7 @@
     <source.plugin.version>3.0.1</source.plugin.version>
     <jar.plugin.version>3.1.0</jar.plugin.version>
     <surefire.plugin.version>2.22.0</surefire.plugin.version>
+    <jacoco.plugin.version>0.8.2</jacoco.plugin.version>
     <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
     <kotlin.compiler.languageVersion>1.2</kotlin.compiler.languageVersion>
     <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
@@ -208,7 +209,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.2</version>
+        <version>${jacoco.plugin.version}</version>
         <executions>
           <execution>
             <goals><goal>prepare-agent</goal></goals>
