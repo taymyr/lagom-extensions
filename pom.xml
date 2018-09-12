@@ -10,8 +10,8 @@
 
   <url>https://taymyr.org</url>
   <organization>
-    <name>Taymyr</name>
-    <url>${project.url}</url>
+    <name>Digital Economy League</name>
+    <url>https://www.digitalleague.ru/</url>
   </organization>
 
   <scm>
@@ -24,7 +24,17 @@
   <properties>
     <dokka.version>0.9.17</dokka.version>
     <kotlin.version>1.2.61</kotlin.version>
+    <lagom.version>[1.4.0,)</lagom.version>
+    <junit5.version>5.3.1</junit5.version>
+    <assertj.version>3.11.1</assertj.version>
+    <ktlint.version>0.28.0</ktlint.version>
+    <deploy.plugin.version>2.8.2</deploy.plugin.version>
+    <antrun.plugin.version>1.8</antrun.plugin.version>
+    <source.plugin.version>3.0.1</source.plugin.version>
+    <jar.plugin.version>3.1.0</jar.plugin.version>
+    <surefire.plugin.version>2.22.0</surefire.plugin.version>
     <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
+    <kotlin.compiler.languageVersion>1.2</kotlin.compiler.languageVersion>
     <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -38,26 +48,39 @@
       <artifactId>kotlin-stdlib-jdk8</artifactId>
       <version>${kotlin.version}</version>
     </dependency>
+    <!-- provided dependencies -->
     <dependency>
       <groupId>com.lightbend.lagom</groupId>
       <artifactId>lagom-javadsl-api_2.12</artifactId>
-      <version>[1.4.0,)</version>
+      <version>${lagom.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <!-- test dependencies -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit5.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>${assertj.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
     <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
+    <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
     <plugins>
       <plugin>
         <artifactId>maven-deploy-plugin</artifactId>
-        <version>2.8.2</version>
+        <version>${deploy.plugin.version}</version>
         <executions>
           <execution>
             <id>default-deploy</id>
             <phase>deploy</phase>
-            <goals>
-              <goal>deploy</goal>
-            </goals>
+            <goals><goal>deploy</goal></goals>
           </execution>
         </executions>
       </plugin>
@@ -65,13 +88,19 @@
         <groupId>org.jetbrains.kotlin</groupId>
         <artifactId>kotlin-maven-plugin</artifactId>
         <version>${kotlin.version}</version>
+        <configuration>
+          <args>
+            <arg>-Xjsr305=strict</arg>
+          </args>
+        </configuration>
         <executions>
           <execution>
             <id>compile</id>
-            <phase>process-sources</phase>
-            <goals>
-              <goal>compile</goal>
-            </goals>
+            <goals><goal>compile</goal></goals>
+          </execution>
+          <execution>
+            <id>test-compile</id>
+            <goals><goal>test-compile</goal></goals>
           </execution>
         </executions>
       </plugin>
@@ -116,7 +145,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.8</version>
+        <version>${antrun.plugin.version}</version>
         <executions>
           <execution>
             <id>ktlint</id>
@@ -132,23 +161,21 @@
                 </java>
               </target>
             </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
+            <goals><goal>run</goal></goals>
           </execution>
         </executions>
         <dependencies>
           <dependency>
             <groupId>com.github.shyiko</groupId>
             <artifactId>ktlint</artifactId>
-            <version>0.28.0</version>
+            <version>${ktlint.version}</version>
           </dependency>
         </dependencies>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.0.1</version>
+        <version>${source.plugin.version}</version>
         <executions>
           <execution>
             <id>attach-sources</id>
@@ -164,7 +191,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>${jar.plugin.version}</version>
         <configuration>
           <archive>
             <manifest>
@@ -173,6 +200,25 @@
             </manifest>
           </archive>
         </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${surefire.plugin.version}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>0.8.2</version>
+        <executions>
+          <execution>
+            <goals><goal>prepare-agent</goal></goals>
+          </execution>
+          <execution>
+            <id>report</id>
+            <phase>test</phase>
+            <goals><goal>report</goal></goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
