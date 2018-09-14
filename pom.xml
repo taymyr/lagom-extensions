@@ -7,20 +7,31 @@
   <version>0.0.3-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>Lagom Extensions</name>
-
+  <description>Utilities for Lagom framework</description>
   <url>https://taymyr.org</url>
   <organization>
     <name>Digital Economy League</name>
     <url>https://www.digitalleague.ru/</url>
   </organization>
-
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <id>taymyr</id>
+      <name>Taymyr Contributors</name>
+      <url>https://github.com/taymyr</url>
+    </developer>
+  </developers>
   <scm>
     <connection>scm:git:https://github.com/taymyr/lagom-extensions.git</connection>
     <developerConnection>scm:git:https://github.com/taymyr/lagom-extensions.git</developerConnection>
     <url>https://github.com/taymyr/lagom-extensions</url>
     <tag>HEAD</tag>
   </scm>
-
   <properties>
     <dokka.version>0.9.17</dokka.version>
     <kotlin.version>1.2.61</kotlin.version>
@@ -34,6 +45,8 @@
     <jar.plugin.version>3.1.0</jar.plugin.version>
     <surefire.plugin.version>2.22.0</surefire.plugin.version>
     <jacoco.plugin.version>0.8.2</jacoco.plugin.version>
+    <nexus.staging.plugin.version>1.6.8</nexus.staging.plugin.version>
+    <gpg.plugin.version>1.6</gpg.plugin.version>
     <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
     <kotlin.compiler.languageVersion>1.2</kotlin.compiler.languageVersion>
     <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
@@ -221,17 +234,47 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.sonatype.plugins</groupId>
+        <artifactId>nexus-staging-maven-plugin</artifactId>
+        <version>${nexus.staging.plugin.version}</version>
+        <extensions>true</extensions>
+        <configuration>
+          <serverId>ossrh</serverId>
+          <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+          <autoReleaseAfterClose>true</autoReleaseAfterClose>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
+  <profiles>
+    <profile>
+      <id>release</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>${gpg.plugin.version}</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>verify</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
   <distributionManagement>
     <snapshotRepository>
-      <id>oss</id>
+      <id>ossrh</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </snapshotRepository>
-    <repository>
-      <id>oss</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
   </distributionManagement>
   <pluginRepositories>
     <pluginRepository>

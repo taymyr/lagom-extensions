@@ -10,6 +10,7 @@ cache:
 
 before_install:
   - cp .travis.settings.xml $HOME/.m2/settings.xml
+  - echo $GPG_SECRET_KEYS | base64 --decode | gpg2 --import
 
 install: ./mvnw dependency:resolve dependency:resolve-plugins -B -V
 
@@ -21,7 +22,7 @@ after_success:
 deploy:
   # Deploy releases
   - provider: script
-    script: ./mvnw deploy -B -V
+    script: ./mvnw deploy -B -V -P release
     skip_cleanup: true
     on:
       tags: true
