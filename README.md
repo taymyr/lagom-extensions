@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/taymyr/lagom-extensions.svg?branch=develop)](https://travis-ci.org/taymyr/lagom-extensions)
 [![Javadocs](https://www.javadoc.io/badge/org.taymyr/lagom-extensions.svg)](https://www.javadoc.io/doc/org.taymyr/lagom-extensions)
 [![Codecov](https://codecov.io/gh/taymyr/lagom-extensions/branch/develop/graph/badge.svg)](https://codecov.io/gh/taymyr/lagom-extensions)
+[![Maven Central](https://img.shields.io/maven-central/v/org.taymyr/lagom-extensions.svg)](https://search.maven.org/search?q=a:lagom-extensions%20AND%20g:org.taymyr)
 
 # Lagom Java API Extensions
 
