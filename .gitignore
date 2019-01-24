@@ -124,6 +124,7 @@ cmake-build-release/
 # IntelliJ
 out/
 logs/
+*.iml
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/

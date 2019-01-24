@@ -34,11 +34,12 @@
   </scm>
   <properties>
     <dokka.version>0.9.17</dokka.version>
-    <kotlin.version>1.2.61</kotlin.version>
+    <kotlin.version>1.3.20</kotlin.version>
     <lagom.version>[1.4.0,)</lagom.version>
     <junit5.version>5.3.1</junit5.version>
     <assertj.version>3.11.1</assertj.version>
     <ktlint.version>0.28.0</ktlint.version>
+    <kotlin-logging.version>1.6.22</kotlin-logging.version>
     <deploy.plugin.version>2.8.2</deploy.plugin.version>
     <antrun.plugin.version>1.8</antrun.plugin.version>
     <source.plugin.version>3.0.1</source.plugin.version>
@@ -54,6 +55,9 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
+    <kafka.junit5.version>3.1.0</kafka.junit5.version>
+    <kafka.version>2.0.0</kafka.version>
+    <scala.binary.version>2.12</scala.binary.version>
   </properties>
 
   <dependencies>
@@ -62,10 +66,26 @@
       <artifactId>kotlin-stdlib-jdk8</artifactId>
       <version>${kotlin.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.jetbrains.kotlin</groupId>
+      <artifactId>kotlin-reflect</artifactId>
+      <version>${kotlin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.github.microutils</groupId>
+      <artifactId>kotlin-logging</artifactId>
+      <version>${kotlin-logging.version}</version>
+    </dependency>
     <!-- provided dependencies -->
     <dependency>
       <groupId>com.lightbend.lagom</groupId>
-      <artifactId>lagom-javadsl-api_2.12</artifactId>
+      <artifactId>lagom-javadsl-api_${scala.binary.version}</artifactId>
+      <version>${lagom.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.lightbend.lagom</groupId>
+      <artifactId>lagom-javadsl-kafka-client_${scala.binary.version}</artifactId>
       <version>${lagom.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -80,6 +100,30 @@
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <version>${assertj.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.lightbend.lagom</groupId>
+      <artifactId>lagom-javadsl-testkit_${scala.binary.version}</artifactId>
+      <version>${lagom.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.lightbend.lagom</groupId>
+      <artifactId>lagom-javadsl-integration-client_${scala.binary.version}</artifactId>
+      <version>${lagom.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.salesforce.kafka.test</groupId>
+      <artifactId>kafka-junit5</artifactId>
+      <version>${kafka.junit5.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka_${scala.binary.version}</artifactId>
+      <version>${kafka.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -105,6 +149,7 @@
         <configuration>
           <args>
             <arg>-Xjsr305=strict</arg>
+            <arg>-Xjvm-default=enable</arg>
           </args>
         </configuration>
         <executions>
