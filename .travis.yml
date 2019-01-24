@@ -8,16 +8,16 @@ cache:
     - $HOME/.cache
     - $HOME/.m2
 
-before_install:
-  - cp .travis.settings.xml $HOME/.m2/settings.xml
-  - echo $GPG_SECRET_KEYS | base64 --decode | gpg2 --import
-
 install: ./mvnw dependency:resolve dependency:resolve-plugins -B -V
 
 script: ./mvnw verify -B -V
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+
+before_deploy:
+  - cp .travis.settings.xml $HOME/.m2/settings.xml
+  - echo $GPG_SECRET_KEYS | base64 --decode | gpg2 --import
 
 deploy:
   # Deploy releases
@@ -32,3 +32,12 @@ deploy:
     skip_cleanup: true
     on:
       branch: develop
+
+notifications:
+  webhooks:
+    urls:
+      - "https://webhooks.gitter.im/e/9e04688b0ae124f5a047"
+      - "https://webhooks.gitter.im/e/869b1a645dc46645e619"
+    on_success: change
+    on_failure: always
+    on_start: never
