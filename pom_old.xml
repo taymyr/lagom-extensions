@@ -33,28 +33,28 @@
     <tag>HEAD</tag>
   </scm>
   <properties>
-    <dokka.version>0.9.17</dokka.version>
-    <kotlin.version>1.3.20</kotlin.version>
-    <lagom.version>[1.4.0,)</lagom.version>
-    <junit5.version>5.3.1</junit5.version>
-    <assertj.version>3.11.1</assertj.version>
-    <ktlint.version>0.28.0</ktlint.version>
-    <kotlin-logging.version>1.6.22</kotlin-logging.version>
-    <deploy.plugin.version>2.8.2</deploy.plugin.version>
-    <antrun.plugin.version>1.8</antrun.plugin.version>
-    <source.plugin.version>3.0.1</source.plugin.version>
-    <jar.plugin.version>3.1.0</jar.plugin.version>
-    <surefire.plugin.version>2.22.0</surefire.plugin.version>
-    <jacoco.plugin.version>0.8.2</jacoco.plugin.version>
-    <nexus.staging.plugin.version>1.6.8</nexus.staging.plugin.version>
-    <gpg.plugin.version>1.6</gpg.plugin.version>
-    <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
-    <kotlin.compiler.languageVersion>1.2</kotlin.compiler.languageVersion>
-    <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <maven.compiler.source>1.8</maven.compiler.source>
-    <maven.compiler.target>1.8</maven.compiler.target>
+    <!--<dokka.version>0.9.17</dokka.version>-->
+    <!--<kotlin.version>1.3.20</kotlin.version>-->
+    <!--<lagom.version>[1.4.0,)</lagom.version>-->
+    <!--<junit5.version>5.3.1</junit5.version>-->
+    <!--<assertj.version>3.11.1</assertj.version>-->
+    <!--<ktlint.version>0.28.0</ktlint.version>-->
+    <!--<kotlin-logging.version>1.6.22</kotlin-logging.version>-->
+    <!--<deploy.plugin.version>2.8.2</deploy.plugin.version>-->
+    <!--<antrun.plugin.version>1.8</antrun.plugin.version>-->
+    <!--<source.plugin.version>3.0.1</source.plugin.version>-->
+    <!--<jar.plugin.version>3.1.0</jar.plugin.version>-->
+    <!--<surefire.plugin.version>2.22.0</surefire.plugin.version>-->
+    <!--<jacoco.plugin.version>0.8.2</jacoco.plugin.version>-->
+    <!--<nexus.staging.plugin.version>1.6.8</nexus.staging.plugin.version>-->
+    <!--<gpg.plugin.version>1.6</gpg.plugin.version>-->
+    <!--<kotlin.compiler.incremental>true</kotlin.compiler.incremental>-->
+    <!--<kotlin.compiler.languageVersion>1.2</kotlin.compiler.languageVersion>-->
+    <!--<kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>-->
+    <!--<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
+    <!--<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>-->
+    <!--<maven.compiler.source>1.8</maven.compiler.source>-->
+    <!--<maven.compiler.target>1.8</maven.compiler.target>-->
     <kafka.junit5.version>3.1.0</kafka.junit5.version>
     <kafka.version>2.0.0</kafka.version>
     <scala.binary.version>2.12</scala.binary.version>

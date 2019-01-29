@@ -1,7 +1,9 @@
-[![Build Status](https://travis-ci.org/taymyr/lagom-extensions.svg?branch=develop)](https://travis-ci.org/taymyr/lagom-extensions)
-[![Javadocs](https://www.javadoc.io/badge/org.taymyr/lagom-extensions.svg)](https://www.javadoc.io/doc/org.taymyr/lagom-extensions)
-[![Codecov](https://codecov.io/gh/taymyr/lagom-extensions/branch/develop/graph/badge.svg)](https://codecov.io/gh/taymyr/lagom-extensions)
-[![Maven Central](https://img.shields.io/maven-central/v/org.taymyr/lagom-extensions.svg)](https://search.maven.org/search?q=a:lagom-extensions%20AND%20g:org.taymyr)
+[![Gitter](https://img.shields.io/badge/chat-gitter-purple.svg)](https://gitter.im/taymyr/taymyr)
+[![Gitter_RU](https://img.shields.io/badge/chat-russian%20channel-purple.svg)](https://gitter.im/taymyr/taymyr_ru)
+[![Build Status](https://travis-ci.org/taymyr/lagom-extensions.svg?branch=master)](https://travis-ci.org/taymyr/lagom-extensions)
+[![Javadocs](https://www.javadoc.io/badge/org.taymyr.lagom/lagom-extensions-java.svg)](https://www.javadoc.io/doc/org.taymyr.lagom/lagom-extensions-java)
+[![Codecov](https://codecov.io/gh/taymyr/lagom-extensions/branch/master/graph/badge.svg)](https://codecov.io/gh/taymyr/lagom-extensions)
+[![Maven Central](https://img.shields.io/maven-central/v/org.taymyr.lagom/lagom-extensions-java.svg)](https://search.maven.org/search?q=a:lagom-extensions%20AND%20g:org.taymyr.lagom)
 
 # Lagom Java API Extensions
 

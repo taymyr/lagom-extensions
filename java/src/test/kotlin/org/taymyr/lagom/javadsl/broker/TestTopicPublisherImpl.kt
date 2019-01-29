@@ -1,7 +1,6 @@
 package org.taymyr.lagom.javadsl.broker
 
 import akka.NotUsed
-import akka.NotUsed.notUsed
 import com.lightbend.lagom.javadsl.api.ServiceCall
 import javax.inject.Inject
 
@@ -15,14 +14,14 @@ class TestTopicPublisherImpl @Inject constructor(
     override fun publishWithoutKey(msg: String): ServiceCall<NotUsed, NotUsed> {
         return ServiceCall {
             simpleTopicProducersRegistry.get(TestTopicService.TOPIC_WITHOUT_KEYS).publish(msg)
-                .thenApply { notUsed() }
+                .thenApply { NotUsed.getInstance() }
         }
     }
 
     override fun publishWithKey(msg: String): ServiceCall<NotUsed, NotUsed> {
         return ServiceCall {
             simpleTopicProducersRegistry.get(TestTopicService.TOPIC_WITH_KEYS).publish(msg)
-                .thenApply { notUsed() }
+                .thenApply { NotUsed.getInstance() }
         }
     }
 }
