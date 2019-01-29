@@ -1,6 +1,7 @@
-
+import org.jetbrains.dokka.DokkaConfiguration
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+import java.net.URL
 
 val isReleaseVersion = !version.toString().endsWith("SNAPSHOT")
 
@@ -95,6 +96,12 @@ tasks.dokka {
     jdkVersion = 8
     reportUndocumented = true
     impliedPlatforms = mutableListOf("JVM")
+    externalDocumentationLink(delegateClosureOf<DokkaConfiguration.ExternalDocumentationLink.Builder> {
+        url = URL("https://www.lagomframework.com/documentation/1.4.x/java/api/")
+    })
+    externalDocumentationLink(delegateClosureOf<DokkaConfiguration.ExternalDocumentationLink.Builder> {
+        url = URL("https://static.javadoc.io/com.google.guava/guava/26.0-jre/")
+    })
 }
 
 publishing {
