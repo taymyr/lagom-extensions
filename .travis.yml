@@ -30,13 +30,13 @@ before_deploy:
 deploy:
   # Deploy releases
   - provider: script
-    script: ./gradlew publish closeAndReleaseRepository -Psigning.keyId=$GPG_KEY_NAME -Psigning.password="$GPG_PASSPHRASE" -Psigning.secretKeyRingFile=$HOME/.gnupg/taymyr.gpg -PossrhUsername=$OSS_USERNAME -PossrhPassword="$OSS_PASSWORD" -PscalaBinaryVersion=$SCALA_VERSION
+    script: ./gradlew publishToNexus closeAndReleaseRepository -Psigning.keyId=$GPG_KEY_NAME -Psigning.password="$GPG_PASSPHRASE" -Psigning.secretKeyRingFile=$HOME/.gnupg/taymyr.gpg -PossrhUsername=$OSS_USERNAME -PossrhPassword="$OSS_PASSWORD" -PscalaBinaryVersion=$SCALA_VERSION
     skip_cleanup: true
     on:
       tags: true
   # Deploy snapshots
   - provider: script
-    script: ./gradlew publish -Psigning.keyId=$GPG_KEY_NAME -Psigning.password="$GPG_PASSPHRASE" -Psigning.secretKeyRingFile=$HOME/.gnupg/taymyr.gpg -PossrhUsername=$OSS_USERNAME -PossrhPassword="$OSS_PASSWORD" -PscalaBinaryVersion=$SCALA_VERSION
+    script: ./gradlew publishToNexus -Psigning.keyId=$GPG_KEY_NAME -Psigning.password="$GPG_PASSPHRASE" -Psigning.secretKeyRingFile=$HOME/.gnupg/taymyr.gpg -PossrhUsername=$OSS_USERNAME -PossrhPassword="$OSS_PASSWORD" -PscalaBinaryVersion=$SCALA_VERSION
     skip_cleanup: true
     on:
       branch: master

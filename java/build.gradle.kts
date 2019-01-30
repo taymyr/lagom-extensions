@@ -26,7 +26,7 @@ plugins {
     kotlin("jvm") version "1.3.20"
     id("org.jetbrains.dokka") version "0.9.17"
     id("org.jlleitschuh.gradle.ktlint") version "6.3.1"
-    `maven-publish`
+    id("de.marcphilipp.nexus-publish") version "0.2.0"
     signing
     jacoco
 }
@@ -138,17 +138,6 @@ publishing {
                     url.set("https://github.com/taymyr/lagom-extensions")
                     tag.set("HEAD")
                 }
-            }
-        }
-    }
-    repositories {
-        maven {
-            val releasesRepoUrl = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
-            val snapshotsRepoUrl = uri("https://oss.sonatype.org/content/repositories/snapshots/")
-            url = if (isReleaseVersion) releasesRepoUrl else snapshotsRepoUrl
-            credentials {
-                username = ossrhUsername
-                password = ossrhPassword
             }
         }
     }
