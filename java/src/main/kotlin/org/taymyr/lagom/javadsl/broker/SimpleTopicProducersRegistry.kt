@@ -6,6 +6,7 @@ import akka.util.ByteString
 import com.lightbend.lagom.internal.javadsl.api.MethodTopicHolder
 import com.lightbend.lagom.javadsl.api.Descriptor.TopicCall
 import com.lightbend.lagom.javadsl.api.Service
+import com.lightbend.lagom.javadsl.api.ServiceLocator
 import com.lightbend.lagom.javadsl.api.broker.kafka.KafkaProperties
 import com.lightbend.lagom.javadsl.api.deser.MessageSerializer.NegotiatedSerializer
 import com.typesafe.config.Config
@@ -23,6 +24,7 @@ private val log = KotlinLogging.logger {}
 @Singleton
 class SimpleTopicProducersRegistry @Inject constructor(
     private val config: Config,
+    private val serviceLocator: ServiceLocator,
     private val materializer: Materializer,
     private val actorSystem: ActorSystem
 ) {
@@ -40,6 +42,7 @@ class SimpleTopicProducersRegistry @Inject constructor(
             if (topicCall.topicHolder() is MethodTopicHolder) {
                 val topicId = topicCall.topicId()
                 producers[topicId.value()] = SimpleTopicProducer(
+                    serviceLocator,
                     topicId,
                     (topicCall as TopicCall<Any>).properties().getValueOf(KafkaProperties.partitionKeyStrategy()),
                     TopicMessageSerializer(topicCall.messageSerializer().serializerForRequest()),
