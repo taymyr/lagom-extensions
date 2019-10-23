@@ -6,14 +6,15 @@ import akka.kafka.ProducerSettings
 import akka.kafka.javadsl.Producer
 import akka.stream.Materializer
 import akka.stream.javadsl.Source
+import com.lightbend.lagom.javadsl.api.ServiceLocator
 import com.lightbend.lagom.javadsl.api.broker.Topic.TopicId
 import com.lightbend.lagom.javadsl.api.broker.kafka.PartitionKeyStrategy
 import com.typesafe.config.Config
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.Serializer
 import org.apache.kafka.common.serialization.StringSerializer
-
 import java.util.concurrent.CompletionStage
+import java.util.concurrent.TimeUnit
 
 /**
  * Simple producer for publishing single records to the topic.
@@ -21,6 +22,7 @@ import java.util.concurrent.CompletionStage
  * @param T Type of a topic record
  */
 class SimpleTopicProducer<T> internal constructor(
+    serviceLocator: ServiceLocator,
     private val topicId: TopicId,
     private val partitionKeyStrategy: PartitionKeyStrategy<T>?,
     messageSerializer: Serializer<T>,
@@ -32,7 +34,7 @@ class SimpleTopicProducer<T> internal constructor(
 
     init {
         val producerConfigPath = "${topicId.value()}.producer"
-        this.producerSettings = if (config.hasPath(producerConfigPath)) {
+        val producerSettings = if (config.hasPath(producerConfigPath)) {
             ProducerSettings.create(
                 config.getConfig(producerConfigPath),
                 StringSerializer(),
@@ -40,6 +42,16 @@ class SimpleTopicProducer<T> internal constructor(
             )
         } else {
             ProducerSettings.create(actorSystem, StringSerializer(), messageSerializer)
+        }
+        val serviceNameConfigPath = "${topicId.value()}.serviceName"
+        if (config.hasPath(serviceNameConfigPath)) {
+            this.producerSettings = producerSettings.withBootstrapServers(
+                serviceLocator.locateAll(config.getString(serviceNameConfigPath)).thenApply { uris ->
+                    uris.filter { uri -> uri.host != null && uri.port != -1 }.joinToString(",") { it.authority }
+                }.toCompletableFuture().get(5, TimeUnit.SECONDS) // :'(
+            )
+        } else {
+            this.producerSettings = producerSettings
         }
     }
 
