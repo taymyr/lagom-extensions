@@ -14,7 +14,7 @@ allprojects {
 
 subprojects {
     group = "org.taymyr.lagom"
-    version = "0.2.0-SNAPSHOT"
+    version = "0.2.0"
 }
 
 nexusStaging {
