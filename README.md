@@ -99,7 +99,7 @@ public ServiceCall<FooTopicRecord, NotUsed> publishToFoo() {
 }
 ```
 
-4. `SimpleTopicProducer` relies on `akka.kafka.producer` config by default (see [Akka docs](https://doc.akka.io/docs/akka-stream-kafka/current/producer.html#settings)).
+4. `SimpleTopicProducer` relies on `akka.kafka.producer` config by default (see [Akka producer](https://doc.akka.io/docs/akka-stream-kafka/current/producer.html#settings), [Akka source](https://doc.akka.io/japi/akka/2.5/akka/stream/javadsl/Source.html#queue(int,akka.stream.OverflowStrategy))).
 You also may provide a separate config for each topic producer. In that case, config path should be `<topic-name>.producer` instead of `akka.kafka.producer`.
 
 ```HOCON
@@ -118,6 +118,13 @@ foo-topic.producer {
 
   # The time interval to commit a transaction when using the `Transactional.sink` or `Transactional.flow`
   eos-commit-interval = 100ms
+
+  # Size of buffer in element count
+  buffer-size = 100
+
+  # Strategy that is used when incoming elements cannot fit inside the buffer.
+  # Possible values: "dropHead", "backpressure", "dropBuffer", "dropNew", "dropTail", "fail".
+  overflow-strategy = "dropHead"
 
   # Properties defined by org.apache.kafka.clients.producer.ProducerConfig
   # can be defined in this configuration section.
