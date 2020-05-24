@@ -1,11 +1,13 @@
 package org.taymyr.lagom.javadsl.broker
 
-import akka.Done
 import akka.actor.ActorSystem
 import akka.kafka.ProducerSettings
 import akka.kafka.javadsl.Producer
 import akka.stream.Materializer
+import akka.stream.OverflowStrategy
+import akka.stream.QueueOfferResult
 import akka.stream.javadsl.Source
+import akka.stream.javadsl.SourceQueueWithComplete
 import com.lightbend.lagom.javadsl.api.ServiceLocator
 import com.lightbend.lagom.javadsl.api.broker.Topic.TopicId
 import com.lightbend.lagom.javadsl.api.broker.kafka.PartitionKeyStrategy
@@ -31,9 +33,13 @@ class SimpleTopicProducer<T> internal constructor(
     config: Config
 ) {
     private val producerSettings: ProducerSettings<String, T>
+    private val source: SourceQueueWithComplete<T>
 
     init {
         val producerConfigPath = "${topicId.value()}.producer"
+        val bufferSizePath = "${topicId.value()}.producer.buffer-size"
+        val overflowStrategyPath = "${topicId.value()}.producer.overflow-strategy"
+        val bufferSize = if (config.hasPath(bufferSizePath)) config.getInt(bufferSizePath) else 100
         val producerSettings = if (config.hasPath(producerConfigPath)) {
             ProducerSettings.create(
                 config.getConfig(producerConfigPath),
@@ -53,16 +59,30 @@ class SimpleTopicProducer<T> internal constructor(
         } else {
             this.producerSettings = producerSettings
         }
+        val overflowStrategy = when (if (config.hasPath(overflowStrategyPath))
+            config.getString(overflowStrategyPath) else "dropHead") {
+            "dropHead" -> OverflowStrategy.dropHead()
+            "backpressure" -> OverflowStrategy.backpressure()
+            "dropBuffer" -> OverflowStrategy.dropBuffer()
+            "dropNew" -> OverflowStrategy.dropNew()
+            "dropTail" -> OverflowStrategy.dropTail()
+            "fail" -> OverflowStrategy.fail()
+            else -> throw IllegalArgumentException("Unknown value overflow-strategy, " +
+                "expected [dropHead, backpressure, dropBuffer, dropNew, dropTail, fail]")
+        }
+
+        this.source = Source.queue<T>(bufferSize, overflowStrategy)
+            .map { ProducerRecord<String, T>(topicId.value(), partitionKeyStrategy?.computePartitionKey(it), it) }
+            .to(Producer.plainSink(this.producerSettings))
+            .run(materializer)
     }
 
     /**
-     * Publishes an entity to the topic using [Producer.plainSink].
+     * Publishes an entity to the topic.
      *
      * @param data An entity to publish to the topic
      */
-    fun publish(data: T): CompletionStage<Done> {
-        val key = partitionKeyStrategy?.computePartitionKey(data)
-        val record = ProducerRecord<String, T>(topicId.value(), key, data)
-        return Source.single(record).runWith(Producer.plainSink(producerSettings), materializer)
+    fun publish(data: T): CompletionStage<QueueOfferResult>? {
+        return source.offer(data)
     }
 }
