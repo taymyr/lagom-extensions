@@ -13,9 +13,9 @@ _Note: We try not to change the API, but before the release of stable version `1
 
 ## Versions compatibility
 
-| Lagom Extensions | Lagom           | Scala          |
-|------------------|-----------------|----------------|
-| 0.+              | 1.4.+ <br> 1.5.+| 2.11 <br> 2.12 |
+| Lagom Extensions | Lagom                       | Scala                    |
+|------------------|-----------------------------|--------------------------|
+| 0.+              | 1.4.+ <br> 1.5.+ <br> 1.6.+ | 2.11 <br> 2.12 <br> 2.13 |
 
 ## Features
 
@@ -181,7 +181,7 @@ Contributions are very welcome.
 
 ## License
 
-Copyright © 2018-2019 Digital Economy League (https://www.digitalleague.ru/).
+Copyright © 2018-2020 Digital Economy League (https://www.digitalleague.ru/).
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this project except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
 
