@@ -4,7 +4,6 @@ jdk:
   - openjdk8
 
 env:
-  - SCALA_VERSION=2.11 LAGOM_VERSION=1.4.15 PLAY_VERSION=2.6.25
   - SCALA_VERSION=2.12 LAGOM_VERSION=1.5.5 PLAY_VERSION=2.7.4
   - SCALA_VERSION=2.13 LAGOM_VERSION=1.6.2 PLAY_VERSION=2.8.1
 
@@ -39,7 +38,7 @@ deploy:
       tags: true
   # Deploy snapshots
   - provider: script
-    script: ./gradlew publishToSonatype -x test -Psigning.keyId=$GPG_KEY_NAME -Psigning.password="$GPG_PASSPHRASE" -Psigning.secretKeyRingFile=$HOME/.gnupg/taymyr.gpg -PossrhUsername=$OSS_USERNAME -PossrhPassword="$OSS_PASSWORD" -PscalaBinaryVersion=$SCALA_VERSION -PlagomVersion=$LAGOM_VERSION -PplayVersion=$PLAY_VERSION
+    script: ./gradlew publishToSonatype -x test -x sign -PossrhUsername=$OSS_USERNAME -PossrhPassword="$OSS_PASSWORD" -PscalaBinaryVersion=$SCALA_VERSION -PlagomVersion=$LAGOM_VERSION -PplayVersion=$PLAY_VERSION
     skip_cleanup: true
     on:
       branch: master
