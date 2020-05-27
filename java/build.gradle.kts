@@ -25,6 +25,7 @@ dependencies {
     compileOnly("com.lightbend.lagom", "lagom-javadsl-api_$scalaBinaryVersion", lagomVersion)
     compileOnly("com.lightbend.lagom", "lagom-javadsl-kafka-client_$scalaBinaryVersion", lagomVersion)
     implementation("io.github.microutils", "kotlin-logging", Versions.`kotlin-logging`)
+    implementation(project(":lagom-extensions-core"))
 
     testImplementation("org.junit.jupiter", "junit-jupiter-api", Versions.junit5)
     testImplementation("org.junit.jupiter", "junit-jupiter-params", Versions.junit5)

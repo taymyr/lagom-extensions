@@ -13,9 +13,9 @@ _Note: We try not to change the API, but before the release of stable version `1
 
 ## Versions compatibility
 
-| Lagom Extensions | Lagom                       | Scala                    |
-|------------------|-----------------------------|--------------------------|
-| 0.+              | 1.4.+ <br> 1.5.+ <br> 1.6.+ | 2.11 <br> 2.12 <br> 2.13 |
+| Lagom Extensions | Lagom            | Scala          |
+|------------------|------------------|----------------|
+| 0.+              | 1.5.+ <br> 1.6.+ | 2.12 <br> 2.13 |
 
 ## Features
 
@@ -132,6 +132,15 @@ foo-topic.producer {
   }
 }
 ```
+
+### Logging requests/responses of strict client HTTP calls with `ConfiguredAhcWSClient`
+Unfortunately out-of-the-box Lagom doesn't support request/response logging for client strict HTTP calls. 
+`ConfiguredAhcWSClient` is a simple custom implementation of the `play.api.libs.ws.WSClient` which Lagom uses to perform the strict client HTTP calls. 
+It allows you to enable request/response (including the body) logging. It can be enabled in your `application.conf` as follows:
+```hocon
+configured-ahc-ws-client.logging.enabled = true
+```
+Enjoy!
 
 ## How to use
 

@@ -15,4 +15,6 @@ object Versions {
     const val `nexus-staging` = "0.21.2"
     const val `nexus-publish` = "0.4.0"
     const val dokka = "0.10.1"
+    const val `scalafmt-plugin` = "1.13.0"
+    const val scalatest = "3.1.1"
 }
