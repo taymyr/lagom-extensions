@@ -7,6 +7,7 @@ import com.lightbend.lagom.internal.javadsl.api.MethodTopicHolder
 import com.lightbend.lagom.javadsl.api.Descriptor.TopicCall
 import com.lightbend.lagom.javadsl.api.Service
 import com.lightbend.lagom.javadsl.api.ServiceLocator
+import com.lightbend.lagom.javadsl.api.broker.Topic
 import com.lightbend.lagom.javadsl.api.broker.kafka.KafkaProperties
 import com.lightbend.lagom.javadsl.api.deser.MessageSerializer.NegotiatedSerializer
 import com.typesafe.config.Config
@@ -31,14 +32,17 @@ class SimpleTopicProducersRegistry @Inject constructor(
     private val producers = ConcurrentHashMap<String, SimpleTopicProducer<*>>()
 
     /**
-     * Register [SimpleTopicProducer]s for each [TopicCall] of a [Service].
+     * Register [SimpleTopicProducer]s for [Topic]s of a [Service].
      *
      * @param service Service descriptor
+     * @param topics Topics for registration. It can be missed to register all topics.
      * @return [SimpleTopicProducersRegistry]
      */
     @Suppress("unchecked_cast")
-    fun register(service: Service): SimpleTopicProducersRegistry {
-        service.descriptor().topicCalls().forEach { topicCall ->
+    fun register(service: Service, vararg topics: Topic<*>): SimpleTopicProducersRegistry {
+        service.descriptor().topicCalls()
+            .filter { tc -> topics.isEmpty() || topics.map { it.topicId() }.contains(tc.topicId()) }
+            .forEach { topicCall ->
             if (topicCall.topicHolder() is MethodTopicHolder) {
                 val topicId = topicCall.topicId()
                 producers[topicId.value()] = SimpleTopicProducer(
