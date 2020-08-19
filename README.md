@@ -126,6 +126,16 @@ foo-topic.producer {
   # Possible values: "dropHead", "backpressure", "dropBuffer", "dropNew", "dropTail", "fail".
   overflow-strategy = "dropHead"
 
+  # Minimum (initial) duration until the child actor will started again, if it is terminated.
+  min-backoff = 3s
+
+  # The exponential back-off is capped to this duration.
+  max-backoff = 30s
+
+  # After calculation of the exponential back-off an additional random delay based on this factor is added,
+  # e.g. 0.2 adds up to 20% delay. In order to skip this additional delay pass in 0.
+  random-factor = 0.2
+
   # Properties defined by org.apache.kafka.clients.producer.ProducerConfig
   # can be defined in this configuration section.
   kafka-clients {

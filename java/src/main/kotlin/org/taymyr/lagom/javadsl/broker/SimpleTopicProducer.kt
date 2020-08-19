@@ -6,6 +6,7 @@ import akka.kafka.javadsl.Producer
 import akka.stream.Materializer
 import akka.stream.OverflowStrategy
 import akka.stream.QueueOfferResult
+import akka.stream.javadsl.RestartSink
 import akka.stream.javadsl.Source
 import akka.stream.javadsl.SourceQueueWithComplete
 import com.lightbend.lagom.javadsl.api.ServiceLocator
@@ -15,6 +16,7 @@ import com.typesafe.config.Config
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.Serializer
 import org.apache.kafka.common.serialization.StringSerializer
+import java.time.Duration
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.TimeUnit
 
@@ -39,6 +41,9 @@ class SimpleTopicProducer<T> internal constructor(
         val producerConfigPath = "${topicId.value()}.producer"
         val bufferSizePath = "${topicId.value()}.producer.buffer-size"
         val overflowStrategyPath = "${topicId.value()}.producer.overflow-strategy"
+        val minBackoffPath = "${topicId.value()}.producer.min-backoff"
+        val maxBackoffPath = "${topicId.value()}.producer.max-backoff"
+        val randomFactorPath = "${topicId.value()}.producer.random-factor"
         val bufferSize = if (config.hasPath(bufferSizePath)) config.getInt(bufferSizePath) else 100
         val producerSettings = if (config.hasPath(producerConfigPath)) {
             ProducerSettings.create(
@@ -70,10 +75,19 @@ class SimpleTopicProducer<T> internal constructor(
             else -> throw IllegalArgumentException("Unknown value overflow-strategy, " +
                 "expected [dropHead, backpressure, dropBuffer, dropNew, dropTail, fail]")
         }
+        val minBackoff = if (config.hasPath(minBackoffPath))
+            config.getDuration(minBackoffPath)
+        else Duration.ofSeconds(3)
+        val maxBackoff = if (config.hasPath(maxBackoffPath))
+            config.getDuration(maxBackoffPath)
+        else Duration.ofSeconds(30)
+        val randomFactor = if (config.hasPath(randomFactorPath))
+            config.getDouble(randomFactorPath)
+        else 0.2
 
         this.source = Source.queue<T>(bufferSize, overflowStrategy)
             .map { ProducerRecord<String, T>(topicId.value(), partitionKeyStrategy?.computePartitionKey(it), it) }
-            .to(Producer.plainSink(this.producerSettings))
+            .to(RestartSink.withBackoff(minBackoff, maxBackoff, randomFactor) { Producer.plainSink(this.producerSettings) })
             .run(materializer)
     }
 
