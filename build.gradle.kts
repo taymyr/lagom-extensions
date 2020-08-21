@@ -18,7 +18,7 @@ allprojects {
 
 subprojects {
     group = "org.taymyr.lagom"
-    version = "0.6.0-SNAPSHOT"
+    version = "0.7.0-SNAPSHOT"
 
     apply<JacocoPlugin>()
     apply<NexusPublishPlugin>()
