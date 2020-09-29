@@ -24,7 +24,8 @@ dependencies {
     implementation(kotlin("reflect"))
     compileOnly("com.lightbend.lagom", "lagom-javadsl-api_$scalaBinaryVersion", lagomVersion)
     compileOnly("com.lightbend.lagom", "lagom-javadsl-kafka-client_$scalaBinaryVersion", lagomVersion)
-    implementation("io.github.microutils", "kotlin-logging", Versions.`kotlin-logging`)
+    compileOnly("org.jetbrains.kotlinx", "kotlinx-coroutines-jdk8", Versions.`kotlinx-coroutines`)
+    api("io.github.microutils", "kotlin-logging", Versions.`kotlin-logging`)
     implementation(project(":lagom-extensions-core"))
 
     testImplementation("org.junit.jupiter", "junit-jupiter-api", Versions.junit5)
