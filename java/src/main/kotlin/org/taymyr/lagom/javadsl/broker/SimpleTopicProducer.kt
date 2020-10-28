@@ -85,8 +85,11 @@ class SimpleTopicProducer<T> internal constructor(
             config.getDouble(randomFactorPath)
         else 0.2
 
+        val topicNameConfigPath = "${topicId.value()}.topic-name"
+        val topicName = if (config.hasPath(topicNameConfigPath)) config.getString(topicNameConfigPath) else topicId.value()
+
         this.source = Source.queue<T>(bufferSize, overflowStrategy)
-            .map { ProducerRecord<String, T>(topicId.value(), partitionKeyStrategy?.computePartitionKey(it), it) }
+            .map { ProducerRecord<String, T>(topicName, partitionKeyStrategy?.computePartitionKey(it), it) }
             .to(RestartSink.withBackoff(minBackoff, maxBackoff, randomFactor) { Producer.plainSink(this.producerSettings) })
             .run(materializer)
     }
