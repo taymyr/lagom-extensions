@@ -143,6 +143,17 @@ foo-topic.producer {
 }
 ```
 
+5. Also you can use a `serviceName` property for lookup bootstrap servers by `ServiceLocator` of _Lagom_. 
+And you can customize the name of topic by property `topic-name` (it can be useful for using naming convensions for difference environments). 
+
+```HOCON
+foo-topic {
+  serviceName = "kafka_native"
+  
+  topic-name = "foo-topic-envXY"
+}
+```
+
 ### Logging requests/responses of strict client HTTP calls with `ConfiguredAhcWSClient`
 Unfortunately out-of-the-box Lagom doesn't support request/response logging for client strict HTTP calls. 
 `ConfiguredAhcWSClient` is a simple custom implementation of the `play.api.libs.ws.WSClient` which Lagom uses to perform the strict client HTTP calls. 

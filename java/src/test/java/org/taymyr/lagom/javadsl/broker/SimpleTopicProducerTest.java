@@ -56,7 +56,7 @@ class SimpleTopicProducerTest {
     @Test
     void testTopicTypeDescriptor() {
         TopicDescriptor a = TopicDescriptor.of("test-topic", String.class);
-        TopicDescriptor  b = TopicDescriptor.of("test-topic", String.class);
+        TopicDescriptor b = TopicDescriptor.of("test-topic", String.class);
         assertThat(a.getId()).isNotEmpty();
         assertThat(a.getType()).isNotNull();
         assertThat(a).isEqualTo(b);
