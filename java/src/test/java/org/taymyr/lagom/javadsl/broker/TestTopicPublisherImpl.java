@@ -2,10 +2,12 @@ package org.taymyr.lagom.javadsl.broker;
 
 import akka.NotUsed;
 import com.lightbend.lagom.javadsl.api.ServiceCall;
+
 import javax.inject.Inject;
 
-class TestTopicPublisherImpl implements TestTopicPublisher {
+import static akka.NotUsed.notUsed;
 
+class TestTopicPublisherImpl implements TestTopicPublisher {
     private SimpleTopicProducersRegistry simpleTopicProducersRegistry;
 
     @Inject
@@ -15,15 +17,19 @@ class TestTopicPublisherImpl implements TestTopicPublisher {
 
     @Override
     public ServiceCall<NotUsed, NotUsed> publishWithoutKey(String msg) {
-        return notUsed ->
-                simpleTopicProducersRegistry.get(TestTopicService.TOPIC_WITHOUT_KEYS).publish(msg)
-                    .thenApply( x -> NotUsed.getInstance() );
+        return notUsed -> simpleTopicProducersRegistry.get(TestTopicService.TOPIC_WITHOUT_KEYS).send(msg)
+            .thenApply(x -> notUsed());
     }
 
     @Override
     public ServiceCall<NotUsed, NotUsed> publishWithKey(String msg) {
-        return notUsed ->
-                simpleTopicProducersRegistry.get(TestTopicService.TOPIC_WITH_KEYS).publish(msg)
-                    .thenApply( x -> NotUsed.getInstance() );
+        return notUsed -> simpleTopicProducersRegistry.get(TestTopicService.TOPIC_WITH_KEYS).send(msg)
+            .thenApply(x -> notUsed());
+    }
+
+    @Override
+    public ServiceCall<NotUsed, NotUsed> enqueueToPublish(String msg) {
+        return notUsed -> simpleTopicProducersRegistry.get(TestTopicService.TOPIC_WITH_KEYS).enqueue(msg)
+            .thenApply(x -> notUsed());
     }
 }

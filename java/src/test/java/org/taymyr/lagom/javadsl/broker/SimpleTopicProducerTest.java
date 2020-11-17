@@ -19,12 +19,11 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.lightbend.lagom.javadsl.testkit.ServiceTest.eventually;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.taymyr.lagom.javadsl.broker.TestTopicService.TOPIC_WITHOUT_KEYS;
 import static org.taymyr.lagom.javadsl.broker.TestTopicService.TOPIC_WITH_KEYS;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
 
 class SimpleTopicProducerTest {
 
@@ -82,6 +81,21 @@ class SimpleTopicProducerTest {
     void testPublishingWithKeys() {
         String uuid = UUID.randomUUID().toString();
         testServer.injector().instanceOf(TestTopicPublisher.class).publishWithKey(uuid).invoke().toCompletableFuture().join();
+        eventually(Duration.create(5, SECONDS), () -> {
+            List<ConsumerRecord<String, String>> records = sharedKafkaTestResource.getKafkaTestUtils().consumeAllRecordsFromTopic(
+                TOPIC_WITH_KEYS.getId(),
+                StringDeserializer.class,
+                StringDeserializer.class
+            );
+            assertThat(records).extracting("key", "value").contains(tuple("" + uuid.hashCode(), uuid));
+        });
+    }
+
+    @Test
+    @DisplayName("Test successful enqueueing")
+    void testEnqueueing() {
+        String uuid = UUID.randomUUID().toString();
+        testServer.injector().instanceOf(TestTopicPublisher.class).enqueueToPublish(uuid).invoke().toCompletableFuture().join();
         eventually(Duration.create(5, SECONDS), () -> {
             List<ConsumerRecord<String, String>> records = sharedKafkaTestResource.getKafkaTestUtils().consumeAllRecordsFromTopic(
                 TOPIC_WITH_KEYS.getId(),

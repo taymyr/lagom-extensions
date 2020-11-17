@@ -1,8 +1,10 @@
 package org.taymyr.lagom.javadsl.broker
 
 import akka.actor.ActorSystem
+import akka.actor.ClassicActorSystemProvider
 import akka.kafka.ProducerSettings
 import akka.kafka.javadsl.Producer
+import akka.kafka.javadsl.SendProducer
 import akka.stream.Materializer
 import akka.stream.OverflowStrategy
 import akka.stream.QueueOfferResult
@@ -14,6 +16,7 @@ import com.lightbend.lagom.javadsl.api.broker.Topic.TopicId
 import com.lightbend.lagom.javadsl.api.broker.kafka.PartitionKeyStrategy
 import com.typesafe.config.Config
 import org.apache.kafka.clients.producer.ProducerRecord
+import org.apache.kafka.clients.producer.RecordMetadata
 import org.apache.kafka.common.serialization.Serializer
 import org.apache.kafka.common.serialization.StringSerializer
 import java.time.Duration
@@ -31,11 +34,12 @@ class SimpleTopicProducer<T> internal constructor(
     private val partitionKeyStrategy: PartitionKeyStrategy<T>?,
     messageSerializer: Serializer<T>,
     private val materializer: Materializer,
-    actorSystem: ActorSystem,
+    private val actorSystem: ActorSystem,
     config: Config
 ) {
     private val producerSettings: ProducerSettings<String, T>
-    private val source: SourceQueueWithComplete<T>
+    private val queue: SourceQueueWithComplete<T>
+    private val topicName: String
 
     init {
         val producerConfigPath = "${topicId.value()}.producer"
@@ -86,20 +90,37 @@ class SimpleTopicProducer<T> internal constructor(
         else 0.2
 
         val topicNameConfigPath = "${topicId.value()}.topic-name"
-        val topicName = if (config.hasPath(topicNameConfigPath)) config.getString(topicNameConfigPath) else topicId.value()
+        topicName = if (config.hasPath(topicNameConfigPath)) config.getString(topicNameConfigPath)!! else topicId.value()
 
-        this.source = Source.queue<T>(bufferSize, overflowStrategy)
-            .map { ProducerRecord<String, T>(topicName, partitionKeyStrategy?.computePartitionKey(it), it) }
+        queue = Source.queue<T>(bufferSize, overflowStrategy)
+            .map { toProducerRecord(it) }
             .to(RestartSink.withBackoff(minBackoff, maxBackoff, randomFactor) { Producer.plainSink(this.producerSettings) })
             .run(materializer)
     }
 
+    private fun toProducerRecord(data: T) =
+        ProducerRecord<String, T>(topicName, partitionKeyStrategy?.computePartitionKey(data), data)
+
     /**
-     * Publishes an entity to the topic.
+     * Enqueues an entity to be further published to the topic.
      *
      * @param data An entity to publish to the topic
      */
-    fun publish(data: T): CompletionStage<QueueOfferResult>? {
-        return source.offer(data)
-    }
+    @Deprecated("Use 'enqueue' method instead. This should be renamed/removed at future releases")
+    fun publish(data: T): CompletionStage<QueueOfferResult> = enqueue(data)
+
+    /**
+     * Enqueues an entity to be further published to the topic.
+     *
+     * @param data An entity to publish to the topic
+     */
+    fun enqueue(data: T): CompletionStage<QueueOfferResult> = queue.offer(data)
+
+    /**
+     * Publishes an entity to the topic using [SendProducer.send].
+     *
+     * @param data An entity to publish to the topic
+     */
+    fun send(data: T): CompletionStage<RecordMetadata> = SendProducer(producerSettings, actorSystem as ClassicActorSystemProvider)
+        .send(toProducerRecord(data))
 }
