@@ -22,6 +22,17 @@ compileTestKotlin.kotlinOptions.freeCompilerArgs += "-Xjvm-default=enable"
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("reflect"))
+    when (scalaBinaryVersion) {
+        "2.12" -> {
+            implementation("org.scala-lang:scala-library") {
+                version {
+                    // Workaround of https://youtrack.jetbrains.com/issue/KT-38325#focus=Comments-27-4492387.0-0
+                    strictly("2.12.10")
+                }
+            }
+        }
+    }
+    implementation("com.typesafe.akka", "akka-stream-kafka_$scalaBinaryVersion", Versions.akkaStreamKafka)
     compileOnly("com.lightbend.lagom", "lagom-javadsl-api_$scalaBinaryVersion", lagomVersion)
     compileOnly("com.lightbend.lagom", "lagom-javadsl-server_$scalaBinaryVersion", lagomVersion)
     compileOnly("com.lightbend.lagom", "lagom-javadsl-kafka-client_$scalaBinaryVersion", lagomVersion)

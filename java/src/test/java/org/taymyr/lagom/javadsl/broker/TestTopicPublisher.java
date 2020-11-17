@@ -14,11 +14,14 @@ public interface TestTopicPublisher extends Service {
 
     ServiceCall<NotUsed, NotUsed> publishWithKey(String msg);
 
+    ServiceCall<NotUsed, NotUsed> enqueueToPublish(String msg);
+
     @Override
     default Descriptor descriptor() {
         return named("test-topic-publisher").withCalls(
             pathCall("/test-topic-publisher/without-key/:msg", this::publishWithoutKey),
-            pathCall("/test-topic-publisher/with-key/:key", this::publishWithKey)
+            pathCall("/test-topic-publisher/with-key/:key", this::publishWithKey),
+            pathCall("/test-topic-publisher/with-key/enqueue/:key", this::enqueueToPublish)
         ).withAutoAcl(true);
     }
 }
