@@ -13,7 +13,9 @@ import play.api.libs.ws.ahc.StandaloneAhcWSRequest
 
 import scala.concurrent.ExecutionContext
 
-class AhcRequestResponseLogger(logger: Logger)(implicit ec: ExecutionContext) extends WSRequestFilter with CurlFormat {
+class AhcRequestResponseLogger(maxChars: Int, logger: Logger)(implicit ec: ExecutionContext)
+    extends WSRequestFilter
+    with CurlFormat {
 
   override def apply(executor: WSRequestExecutor): WSRequestExecutor = {
     WSRequestExecutor { request =>
@@ -34,7 +36,7 @@ class AhcRequestResponseLogger(logger: Logger)(implicit ec: ExecutionContext) ex
       .append(s"Request correlation ID: $correlationId")
       .append("\n")
       .append(toCurl(request))
-    logger.info(sb.toString())
+    log(sb)
     url
   }
 
@@ -76,7 +78,17 @@ class AhcRequestResponseLogger(logger: Logger)(implicit ec: ExecutionContext) ex
       case None => // do nothing
     }
 
-    logger.info(sb.toString())
+    log(sb)
+  }
+
+  private def log(sb: StringBuilder): Unit = {
+    if (logger.isInfoEnabled()) {
+      if (sb.length() > maxChars) {
+        sb.setLength(maxChars)
+        sb.append(" ... truncated")
+      }
+      logger.info(sb.toString())
+    }
   }
 }
 
@@ -84,11 +96,11 @@ object AhcRequestResponseLogger {
 
   private val logger = LoggerFactory.getLogger("org.taymyr.lagom.ws.AhcRequestResponseLogger")
 
-  def apply()(implicit ec: ExecutionContext): AhcRequestResponseLogger = {
-    new AhcRequestResponseLogger(logger)
+  def apply(maxChars: Int)(implicit ec: ExecutionContext): AhcRequestResponseLogger = {
+    new AhcRequestResponseLogger(maxChars, logger)
   }
 
-  def apply(logger: Logger)(implicit ec: ExecutionContext): AhcRequestResponseLogger = {
-    new AhcRequestResponseLogger(logger)
+  def apply(maxChars: Int, logger: Logger)(implicit ec: ExecutionContext): AhcRequestResponseLogger = {
+    new AhcRequestResponseLogger(maxChars, logger)
   }
 }
