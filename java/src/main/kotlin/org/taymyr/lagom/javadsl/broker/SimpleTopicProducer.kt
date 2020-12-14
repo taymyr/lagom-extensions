@@ -1,7 +1,6 @@
 package org.taymyr.lagom.javadsl.broker
 
 import akka.actor.ActorSystem
-import akka.actor.ClassicActorSystemProvider
 import akka.kafka.ProducerSettings
 import akka.kafka.javadsl.Producer
 import akka.kafka.javadsl.SendProducer
@@ -121,6 +120,6 @@ class SimpleTopicProducer<T> internal constructor(
      *
      * @param data An entity to publish to the topic
      */
-    fun send(data: T): CompletionStage<RecordMetadata> = SendProducer(producerSettings, actorSystem as ClassicActorSystemProvider)
+    fun send(data: T): CompletionStage<RecordMetadata> = SendProducer(producerSettings, actorSystem)
         .send(toProducerRecord(data))
 }
