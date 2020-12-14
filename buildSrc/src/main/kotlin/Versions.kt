@@ -1,12 +1,12 @@
 @Suppress("ObjectPropertyName")
 object Versions {
-    const val kotlin = "1.4.10"
-    const val `kotlinx-coroutines` = "1.3.9"
+    const val kotlin = "1.4.21"
+    const val `kotlinx-coroutines` = "1.4.2"
     const val scalaBinary = "2.13"
     const val akkaStreamKafka = "2.0.5"
-    const val lagom = "1.6.2"
+    const val lagom = "1.6.4"
     const val lagomPac4j = "2.1.0"
-    const val play = "2.8.1"
+    const val play = "2.8.2"
     const val ktlint = "0.32.0"
     const val `ktlint-plugin` = "8.0.0"
     const val `kotlin-logging` = "1.6.22"
