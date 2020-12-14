@@ -5,10 +5,12 @@ import com.lightbend.lagom.javadsl.api.transport.MessageProtocol
 import com.lightbend.lagom.javadsl.api.transport.ResponseHeader
 import com.lightbend.lagom.javadsl.api.transport.ResponseHeader.OK
 import org.taymyr.lagom.javadsl.api.transport.MessageProtocols.JSON
+import play.core.cookie.encoding.Cookie
+import play.core.cookie.encoding.ServerCookieEncoder
+import play.mvc.Http.HeaderNames.SET_COOKIE
 
 /**
  * Utilities and constants for [ResponseHeader].
- * @author Sergey Morgunov
  */
 object ResponseHeaders {
 
@@ -52,5 +54,14 @@ object ResponseHeaders {
     @JvmStatic
     fun <T> okJson(data: T): Pair<ResponseHeader, T> {
         return Pair.create(OK_JSON, data)
+    }
+
+    /**
+     * Add cookie to response.
+     * @param cookie Cookie
+     */
+    @JvmStatic
+    fun ResponseHeader.withCookie(cookie: Cookie): ResponseHeader {
+        return this.withHeader(SET_COOKIE, ServerCookieEncoder.STRICT.encode(cookie))
     }
 }
