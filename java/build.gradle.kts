@@ -36,6 +36,7 @@ dependencies {
     compileOnly("com.lightbend.lagom", "lagom-javadsl-api_$scalaBinaryVersion", lagomVersion)
     compileOnly("com.lightbend.lagom", "lagom-javadsl-server_$scalaBinaryVersion", lagomVersion)
     compileOnly("com.lightbend.lagom", "lagom-javadsl-kafka-client_$scalaBinaryVersion", lagomVersion)
+    compileOnly("com.lightbend.lagom", "lagom-cluster-core_$scalaBinaryVersion", lagomVersion)
     compileOnly("org.pac4j", "lagom-pac4j_$scalaBinaryVersion", Versions.lagomPac4j)
     compileOnly("org.jetbrains.kotlinx", "kotlinx-coroutines-jdk8", Versions.`kotlinx-coroutines`)
     api("io.github.microutils", "kotlin-logging", Versions.`kotlin-logging`)
@@ -50,6 +51,10 @@ dependencies {
     testImplementation("com.lightbend.lagom", "lagom-javadsl-testkit_$scalaBinaryVersion", lagomVersion)
     testImplementation("com.lightbend.lagom", "lagom-javadsl-integration-client_$scalaBinaryVersion", lagomVersion)
     testImplementation("com.typesafe.play", "play-akka-http-server_$scalaBinaryVersion", playVersion)
+}
+
+sourceSets.main {
+    java.srcDirs("src/main/kotlin", "src/main/kotlin-$scalaBinaryVersion")
 }
 
 configurations {
