@@ -18,9 +18,11 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
 import org.apache.kafka.common.serialization.Serializer
 import org.apache.kafka.common.serialization.StringSerializer
+import scala.compat.java8.FutureConverters.toJava
 import java.time.Duration
 import java.util.concurrent.CompletionStage
 import java.util.concurrent.TimeUnit
+import akka.kafka.scaladsl.`SendProducer$`.`MODULE$` as ScalaSendProducerCompanion
 
 /**
  * Simple producer for publishing single records to the topic.
@@ -120,6 +122,7 @@ class SimpleTopicProducer<T> internal constructor(
      *
      * @param data An entity to publish to the topic
      */
-    fun send(data: T): CompletionStage<RecordMetadata> = SendProducer(producerSettings, actorSystem)
-        .send(toProducerRecord(data))
+    fun send(data: T): CompletionStage<RecordMetadata> = toJava(
+        ScalaSendProducerCompanion.apply(producerSettings, actorSystem).send(toProducerRecord(data))
+    )
 }
