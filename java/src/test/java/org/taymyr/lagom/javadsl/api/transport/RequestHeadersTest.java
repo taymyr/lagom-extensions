@@ -9,6 +9,8 @@ import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.taymyr.lagom.javadsl.api.transport.RequestHeaders.getCookie;
+import static org.taymyr.lagom.javadsl.api.transport.RequestHeaders.withCookies;
+import static play.mvc.Http.HeaderNames.COOKIE;
 
 class RequestHeadersTest {
 
@@ -28,6 +30,12 @@ class RequestHeadersTest {
         RequestHeader requestHeader = RequestHeader.DEFAULT.withHeader("cookie", "name=value; name2=value2; name3=value3");
         assertThat(getCookie(requestHeader, "name2").value()).isEqualTo("value2");
         assertThat(getCookie(requestHeader, "name4")).isNull();
+    }
+
+    @Test
+    void testWithCookies() {
+        RequestHeader modifyRequestHeader = withCookies(RequestHeader.DEFAULT, new DefaultCookie("cookie", "value"));
+        assertThat(modifyRequestHeader.getHeader(COOKIE)).hasValue("cookie=value");
     }
 
 }

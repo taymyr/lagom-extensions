@@ -10,9 +10,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.taymyr.lagom.javadsl.api.transport.MessageProtocols.JSON;
 import static org.taymyr.lagom.javadsl.api.transport.MessageProtocols.YAML;
 import static org.taymyr.lagom.javadsl.api.transport.ResponseHeaders.OK_JSON;
+import static org.taymyr.lagom.javadsl.api.transport.ResponseHeaders.getCookies;
 import static org.taymyr.lagom.javadsl.api.transport.ResponseHeaders.ok;
 import static org.taymyr.lagom.javadsl.api.transport.ResponseHeaders.okJson;
 import static org.taymyr.lagom.javadsl.api.transport.ResponseHeaders.withCookie;
+import static play.mvc.Http.HeaderNames.SET_COOKIE;
 
 class ResponseHeadersTest {
 
@@ -48,8 +50,14 @@ class ResponseHeadersTest {
     }
 
     @Test
-    void testCookie() {
+    void testWithCookie() {
         ResponseHeader header = withCookie(OK, new DefaultCookie("cookie", "value"));
-        assertThat(header.getHeader("set-cookie").get()).isEqualTo("cookie=value");
+        assertThat(header.getHeader(SET_COOKIE)).hasValue("cookie=value");
+    }
+
+    @Test
+    void testGetCookie() {
+        ResponseHeader header = ResponseHeader.OK.withHeader(SET_COOKIE,"cookie=value");
+        assertThat(getCookies(header)).isNotEmpty().contains(new DefaultCookie("cookie", "value"));
     }
 }
