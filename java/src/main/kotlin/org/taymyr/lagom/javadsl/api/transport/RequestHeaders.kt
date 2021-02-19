@@ -3,6 +3,7 @@ package org.taymyr.lagom.javadsl.api.transport
 import com.lightbend.lagom.javadsl.api.transport.RequestHeader
 import play.core.cookie.encoding.Cookie
 import play.core.cookie.encoding.ServerCookieDecoder
+import play.core.cookie.encoding.ServerCookieEncoder
 import play.mvc.Http.HeaderNames.COOKIE
 
 /**
@@ -31,4 +32,22 @@ object RequestHeaders {
         this.getHeader(COOKIE)
             .map(ServerCookieDecoder.STRICT::decode)
             .orElse(emptySet())
+
+    /**
+     * Add cookie to request.
+     * @param cookies Set Cookies
+     */
+    @JvmStatic
+    fun RequestHeader.withCookies(cookies: Collection<Cookie>): RequestHeader {
+        return this.withHeader(COOKIE, ServerCookieEncoder.STRICT.encode(cookies).joinToString("; "))
+    }
+
+    /**
+     * Add cookie to request.
+     * @param cookies Cookies
+     */
+    @JvmStatic
+    fun RequestHeader.withCookies(vararg cookies: Cookie): RequestHeader {
+        return withCookies(cookies.asList())
+    }
 }

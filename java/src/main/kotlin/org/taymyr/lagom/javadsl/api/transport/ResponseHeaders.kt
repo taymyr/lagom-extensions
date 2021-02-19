@@ -6,6 +6,7 @@ import com.lightbend.lagom.javadsl.api.transport.ResponseHeader
 import com.lightbend.lagom.javadsl.api.transport.ResponseHeader.OK
 import org.taymyr.lagom.javadsl.api.transport.MessageProtocols.JSON
 import play.core.cookie.encoding.Cookie
+import play.core.cookie.encoding.ServerCookieDecoder
 import play.core.cookie.encoding.ServerCookieEncoder
 import play.mvc.Http.HeaderNames.SET_COOKIE
 
@@ -55,6 +56,17 @@ object ResponseHeaders {
     fun <T> okJson(data: T): Pair<ResponseHeader, T> {
         return Pair.create(OK_JSON, data)
     }
+
+    /**
+     * Get all cookies from response.
+     * @return Empty set if cookies not found.
+     */
+    @JvmStatic
+    fun ResponseHeader.getCookies(): Set<Cookie> =
+        this.headers()[SET_COOKIE]
+            .orEmpty()
+            .flatMap(ServerCookieDecoder.STRICT::decode)
+            .toSet()
 
     /**
      * Add cookie to response.
