@@ -14,7 +14,9 @@ import static org.taymyr.lagom.javadsl.api.transport.ResponseHeaders.getCookies;
 import static org.taymyr.lagom.javadsl.api.transport.ResponseHeaders.ok;
 import static org.taymyr.lagom.javadsl.api.transport.ResponseHeaders.okJson;
 import static org.taymyr.lagom.javadsl.api.transport.ResponseHeaders.withCookie;
+import static play.mvc.Http.HeaderNames.LOCATION;
 import static play.mvc.Http.HeaderNames.SET_COOKIE;
+import static play.mvc.Http.Status.FOUND;
 
 class ResponseHeadersTest {
 
@@ -47,6 +49,14 @@ class ResponseHeadersTest {
         Pair<ResponseHeader, String> ok = okJson(data);
         assertThat(ok.first()).isEqualTo(OK_JSON);
         assertThat(ok.second()).isEqualTo(data);
+    }
+
+    @Test
+    void testFound() {
+        String location = "http://test.com";
+        Pair<ResponseHeader, String> found = ResponseHeaders.found(location);
+        assertThat(found.first().getHeader(LOCATION)).hasValue(location);
+        assertThat(found.first().status()).isEqualTo(FOUND);
     }
 
     @Test
