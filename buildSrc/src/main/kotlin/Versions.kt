@@ -19,4 +19,5 @@ object Versions {
     const val dokka = "0.10.1"
     const val `scalafmt-plugin` = "1.13.0"
     const val scalatest = "3.1.1"
+    const val jgitver = "0.9.1"
 }
