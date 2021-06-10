@@ -40,7 +40,6 @@ dependencies {
     compileOnly("com.lightbend.lagom", "lagom-cluster-core_$scalaBinaryVersion", lagomVersion)
     compileOnly("org.pac4j", "lagom-pac4j_$scalaBinaryVersion", Versions.lagomPac4j)
     compileOnly("org.jetbrains.kotlinx", "kotlinx-coroutines-jdk8", Versions.`kotlinx-coroutines`)
-    api("io.github.microutils", "kotlin-logging", Versions.`kotlin-logging`)
     implementation(project(":lagom-extensions-core"))
 
     testImplementation("org.junit.jupiter", "junit-jupiter-api", Versions.junit5)
