@@ -3,6 +3,7 @@
 plugins {
     scala
     id("cz.alenkacz.gradle.scalafmt") version Versions.`scalafmt-plugin`
+    `maven-publish`
     signing
 }
 
