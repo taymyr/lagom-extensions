@@ -69,16 +69,18 @@ class SimpleTopicProducer<T> internal constructor(
         } else {
             this.producerSettings = producerSettings
         }
-        val overflowStrategy = when (if (config.hasPath(overflowStrategyPath))
-            config.getString(overflowStrategyPath) else "dropHead") {
+        val overflowStrategy = when (
+            if (config.hasPath(overflowStrategyPath)) config.getString(overflowStrategyPath) else "dropHead"
+        ) {
             "dropHead" -> OverflowStrategy.dropHead()
             "backpressure" -> OverflowStrategy.backpressure()
             "dropBuffer" -> OverflowStrategy.dropBuffer()
             "dropNew" -> OverflowStrategy.dropNew()
             "dropTail" -> OverflowStrategy.dropTail()
             "fail" -> OverflowStrategy.fail()
-            else -> throw IllegalArgumentException("Unknown value overflow-strategy, " +
-                "expected [dropHead, backpressure, dropBuffer, dropNew, dropTail, fail]")
+            else -> throw IllegalArgumentException(
+                "Unknown value overflow-strategy, expected [dropHead, backpressure, dropBuffer, dropNew, dropTail, fail]"
+            )
         }
         val minBackoff = if (config.hasPath(minBackoffPath))
             config.getDuration(minBackoffPath)

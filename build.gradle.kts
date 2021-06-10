@@ -14,11 +14,7 @@ allprojects {
     repositories {
         mavenCentral()
     }
-}
-
-subprojects {
     apply<JacocoPlugin>()
-
     jacoco {
         toolVersion = Versions.jacoco
     }
@@ -54,10 +50,10 @@ val jacocoAggregateReport by tasks.creating(JacocoReport::class) {
         xml.isEnabled = true
     }
     additionalClassDirs(files(subprojects.flatMap { project ->
-        listOf("scala", "kotlin").map { project.buildDir.path + "/classes/$it/main" }
+        listOf("scala", "kotlin", "kotlin-2.13").map { project.buildDir.path + "/classes/$it/main" }
     }))
     additionalSourceDirs(files(subprojects.flatMap { project ->
-        listOf("scala", "kotlin").map { project.file("src/main/$it").absolutePath }
+        listOf("scala", "kotlin", "kotlin-2.13").map { project.file("src/main/$it").absolutePath }
     }))
     dependsOn(jacocoAggregateMerge)
 }

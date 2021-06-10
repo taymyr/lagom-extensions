@@ -53,10 +53,10 @@ class SimpleTopicProducersRegistry @Inject constructor(
                 } else {
                     log.error(
                         """
-                    Can not register simple topic producer for topic ${topicCall.topicId()}.
-                    Reason was that it was expected a topicHolder of type ${MethodTopicHolder::class.java.name}
-                    but ${topicCall?.topicHolder()?.javaClass?.name} was found instead.
-                    """.trimIndent()
+                        Can not register simple topic producer for topic ${topicCall.topicId()}.
+                        Reason was that it was expected a topicHolder of type ${MethodTopicHolder::class.java.name}
+                        but ${topicCall?.topicHolder()?.javaClass?.name} was found instead.
+                        """.trimIndent()
                     )
                 }
             }
