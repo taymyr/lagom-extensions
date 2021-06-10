@@ -2,7 +2,6 @@ package org.taymyr.lagom.javadsl.api.transport
 
 import com.google.common.net.MediaType
 import com.lightbend.lagom.javadsl.api.transport.MessageProtocol
-
 import java.util.Optional.of
 
 /**
@@ -57,7 +56,7 @@ object MessageProtocols {
      */
     @JvmStatic
     fun fromFile(file: String, def: MessageProtocol?): MessageProtocol? {
-        return when (file.substringAfterLast('.', "").toLowerCase()) {
+        return when (file.substringAfterLast('.', "").lowercase()) {
             "json" -> JSON
             "yaml", "yml" -> YAML
             else -> def

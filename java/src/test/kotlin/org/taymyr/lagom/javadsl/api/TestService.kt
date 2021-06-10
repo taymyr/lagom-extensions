@@ -13,11 +13,10 @@ interface TestService : Service {
 
     fun testMethod(): ServiceCall<NotUsed, String>
 
-    @JvmDefault
     override fun descriptor(): Descriptor {
         return named("test-service")
-                .withCalls(
-                    restCall<NotUsed, String>(Method.GET, "/test", TestService::testMethod.javaMethod)
-                )
+            .withCalls(
+                restCall<NotUsed, String>(Method.GET, "/test", TestService::testMethod.javaMethod)
+            )
     }
 }
