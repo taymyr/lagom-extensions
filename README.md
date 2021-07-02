@@ -163,6 +163,49 @@ configured-ahc-ws-client.logging.enabled = true
 ```
 Enjoy!
 
+### ServiceCall running on coroutines (Java &#10007; / Scala &#10007; / Kotlin &#10003;)
+Using `CoroutineService` you can make requests using coroutines.
+Example:
+```kotlin
+class TestService @Inject constructor(actorSystem: ActorSystem) : Service, CoroutineService {
+    
+    override val dispatcher: CoroutineDispatcher = actorSystem.dispatcher.asCoroutineDispatcher()
+    
+    private fun testMethod(): ServiceCall<NotUsed, String> = serviceCall { 
+        "Hello, from coroutine!"
+    }
+
+    override fun descriptor(): Descriptor {
+        return Service.named("test-service")
+            .withCalls(
+                Service.restCall<NotUsed, String>(Method.GET, "/test", TestService::testMethod.javaMethod)
+            )
+    }
+}
+```
+You must define the `CoroutineDispatcher` on which the coroutines will run. Basically, you need to use akka default execution context.
+`CoroutineSecuredService` allows you to execute authorized requests from `org.pac4j.lagom`. Example:
+```kotlin
+class TestService @Inject constructor(actorSystem: ActorSystem) : Service, CoroutineSecuredService {
+
+    override fun getSecurityConfig(): Config {
+        TODO("Return security config")
+    }
+
+    override val dispatcher: CoroutineDispatcher = actorSystem.dispatcher.asCoroutineDispatcher()
+
+    private fun testMethod(): ServiceCall<NotUsed, String> = authenticatedServiceCall { request, profile ->
+        "Hello, from coroutine!"
+    }
+
+    override fun descriptor(): Descriptor {
+        return Service.named("test-service")
+            .withCalls(
+                Service.restCall<NotUsed, String>(Method.GET, "/test", TestService::testMethod.javaMethod)
+            )
+    }
+}
+```
 ## How to use
 
 All **released** artifacts are available in the [Maven central repository](https://search.maven.org/search?q=a:lagom-extensions-java_2.12%20AND%20g:org.taymyr.lagom).
