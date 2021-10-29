@@ -1,6 +1,6 @@
 [![Gitter](https://img.shields.io/badge/chat-gitter-purple.svg)](https://gitter.im/taymyr/taymyr)
 [![Gitter_RU](https://img.shields.io/badge/chat-russian%20channel-purple.svg)](https://gitter.im/taymyr/taymyr_ru)
-[![Build Status](https://travis-ci.org/taymyr/lagom-extensions.svg?branch=master)](https://travis-ci.org/taymyr/lagom-extensions)
+[![Build Status](https://app.travis-ci.com/taymyr/lagom-extensions.svg?branch=master)](https://app.travis-ci.com/taymyr/lagom-extensions)
 [![Javadocs](https://www.javadoc.io/badge/org.taymyr.lagom/lagom-extensions-java_2.12.svg)](https://www.javadoc.io/doc/org.taymyr.lagom/lagom-extensions-java_2.12)
 [![Codecov](https://codecov.io/gh/taymyr/lagom-extensions/branch/master/graph/badge.svg)](https://codecov.io/gh/taymyr/lagom-extensions)
 [![Maven Central](https://img.shields.io/maven-central/v/org.taymyr.lagom/lagom-extensions-java_2.12.svg)](https://search.maven.org/search?q=a:lagom-extensions-java_2.12%20AND%20g:org.taymyr.lagom)
