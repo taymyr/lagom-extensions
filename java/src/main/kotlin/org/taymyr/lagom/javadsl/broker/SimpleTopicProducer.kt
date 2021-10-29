@@ -3,7 +3,7 @@ package org.taymyr.lagom.javadsl.broker
 import akka.actor.ActorSystem
 import akka.kafka.ProducerSettings
 import akka.kafka.javadsl.Producer
-import akka.kafka.javadsl.SendProducer
+import akka.kafka.scaladsl.SendProducer
 import akka.stream.Materializer
 import akka.stream.OverflowStrategy
 import akka.stream.QueueOfferResult
@@ -101,6 +101,10 @@ class SimpleTopicProducer<T> internal constructor(
             .run(materializer)
     }
 
+    private val sendProducer: SendProducer<String, T> by lazy {
+        ScalaSendProducerCompanion.apply(producerSettings, actorSystem)
+    }
+
     private fun toProducerRecord(data: T) =
         ProducerRecord<String, T>(topicName, partitionKeyStrategy?.computePartitionKey(data), data)
 
@@ -125,6 +129,6 @@ class SimpleTopicProducer<T> internal constructor(
      * @param data An entity to publish to the topic
      */
     fun send(data: T): CompletionStage<RecordMetadata> = toJava(
-        ScalaSendProducerCompanion.apply(producerSettings, actorSystem).send(toProducerRecord(data))
+        sendProducer.send(toProducerRecord(data))
     )
 }
