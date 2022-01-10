@@ -1,6 +1,6 @@
 @Suppress("ObjectPropertyName")
 object Versions {
-    const val kotlin = "1.5.10"
+    const val kotlin = "1.6.10"
     const val `kotlinx-coroutines` = "1.5.0"
     const val scalaBinary = "2.13"
     const val akkaStreamKafka = "2.0.5"
@@ -19,4 +19,5 @@ object Versions {
     const val `scalafmt-plugin` = "1.13.0"
     const val scalatest = "3.1.1"
     const val jgitver = "0.9.1"
+    const val `play-redis-cache` = "2.6.1"
 }

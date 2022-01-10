@@ -206,6 +206,32 @@ class TestService @Inject constructor(actorSystem: ActorSystem) : Service, Corou
     }
 }
 ```
+### The Cache API using coroutines (Java &#10007; / Scala &#10007; / Kotlin &#10003;)
+
+`org.taymyr.lagom.kotlindsl.cache.AsyncCacheApi` allows using methods from `play.cache.AsyncCacheApi` along with suspend functions.
+To use, you need to call the `org.taymyr.lagom.kotlindsl.cache.AsyncCacheApiKt#suspend`
+
+Example:
+```kotlin
+class TestCache @Inject constructor(playCache: play.cache.AsyncCacheApi) {
+
+    private val cacheApi = playCache.suspend()
+
+    suspend fun cacheSomeData(someData: String) {
+        cacheApi.set("key", someData)
+        cacheApi.set("key", Duration.ofSeconds(10), someData)
+        cacheApi.getOrElseUpdate("key") { someData }
+        cacheApi.getOrElseUpdate("key", Duration.ofSeconds(10)) { someData }
+        val cacheValue = cacheApi.get<String>("key")
+        cacheApi.remove("key")
+        cacheApi.removeAll()
+    }
+}
+```
+Supported cache implementations:
+* [play-caffeine](https://github.com/playframework/playframework/tree/master/cache/play-caffeine-cache)
+* [play-redis](https://github.com/KarelCemus/play-redis)
+
 ## How to use
 
 All **released** artifacts are available in the [Maven central repository](https://search.maven.org/search?q=a:lagom-extensions-java_2.12%20AND%20g:org.taymyr.lagom).
