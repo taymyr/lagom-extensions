@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.taymyr.lagom.javadsl.api.transport.MessageProtocols.FORM_URLENCODED;
 import static org.taymyr.lagom.javadsl.api.transport.MessageProtocols.JSON;
 import static org.taymyr.lagom.javadsl.api.transport.MessageProtocols.JSON_UTF_8;
 import static org.taymyr.lagom.javadsl.api.transport.MessageProtocols.YAML;
@@ -27,6 +28,10 @@ class MessageProtocolsTest {
         assertThat(YAML.contentType()).isEqualTo(of("application/x-yaml"));
         assertThat(YAML.charset()).isNotPresent();
         assertThat(YAML.version()).isNotPresent();
+
+        assertThat(FORM_URLENCODED.contentType()).isEqualTo(of("application/x-www-form-urlencoded"));
+        assertThat(FORM_URLENCODED.charset()).isNotPresent();
+        assertThat(FORM_URLENCODED.version()).isNotPresent();
     }
 
     @Test
