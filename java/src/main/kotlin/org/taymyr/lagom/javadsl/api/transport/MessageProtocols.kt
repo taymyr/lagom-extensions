@@ -29,6 +29,12 @@ object MessageProtocols {
     val YAML = fromMediaType(MediaType.create("application", "x-yaml"))
 
     /**
+     * [MessageProtocol] for "application/x-www-form-urlencoded"
+     */
+    @JvmField
+    val FORM_URLENCODED = fromMediaType(MediaType.FORM_DATA)
+
+    /**
      * Create [MessageProtocol] from [MediaType].
      * @param mediaType Media Type
      * @return Message Protocol
