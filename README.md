@@ -232,6 +232,38 @@ Supported cache implementations:
 * [play-caffeine](https://github.com/playframework/playframework/tree/master/cache/play-caffeine-cache)
 * [play-redis](https://github.com/KarelCemus/play-redis)
 
+### Json-serializer that uses kotlinx-serialization (Java &#10007; / Scala &#10007; / Kotlin &#10003;)
+Using `KotlinJsonSerializer` you can serialize/deserialize service responses using [kotlinx-serialization](https://github.com/Kotlin/kotlinx.serialization).
+Serializable classes must be annotated with `kotlinx.serialization.Serializable`, otherwise `IllegalArgumentException` exception will be thrown when the service starts.
+If you are using the `KotlinJsonSerializerFactory` in descriptor, then all service request/response classes must be annotated with `kotlinx.serialization.Serializable`.
+
+Example:
+```kotlin
+@Serializable
+data class TestData(
+    val field1: String,
+    val field2: Int
+)
+interface TestService : Service {
+
+    fun testSerialization(): ServiceCall<TestData, TestData>
+
+    override fun descriptor(): Descriptor = named("test-service").withCalls(
+        restCall<TestData, TestData>(
+            Method.POST,
+            "/api/test/serialization",
+            TestService::testSerialization.javaMethod
+        ),
+    ) .withMessageSerializer(TestData::class.java,
+        KotlinJsonSerializer(
+            Json { ignoreUnknownKeys = true },
+            TestData::class.java
+        )
+    )
+//        .withSerializerFactory(KotlinJsonSerializerFactory ()) or use factory for all methods
+}
+```
+
 ## How to use
 
 All **released** artifacts are available in the [Maven central repository](https://search.maven.org/search?q=a:lagom-extensions-java_2.12%20AND%20g:org.taymyr.lagom).
