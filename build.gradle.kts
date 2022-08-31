@@ -42,12 +42,11 @@ val jacocoAggregateMerge by tasks.creating(JacocoMerge::class) {
     )
 }
 
-@Suppress("UnstableApiUsage")
 val jacocoAggregateReport by tasks.creating(JacocoReport::class) {
     group = LifecycleBasePlugin.VERIFICATION_GROUP
     executionData(jacocoAggregateMerge.destinationFile)
     reports {
-        xml.isEnabled = true
+        xml.required.set(true)
     }
     additionalClassDirs(files(subprojects.flatMap { project ->
         listOf("scala", "kotlin", "kotlin-2.13").map { project.buildDir.path + "/classes/$it/main" }

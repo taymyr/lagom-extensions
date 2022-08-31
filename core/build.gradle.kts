@@ -14,11 +14,11 @@ dependencies {
 }
 
 configurations {
-    testCompile.get().extendsFrom(compileOnly.get())
+    testImplementation.get().extendsFrom(compileOnly.get())
 }
 
 val scalaTest by tasks.creating(JavaExec::class) {
-    main = "org.scalatest.tools.Runner"
+    mainClass.set("org.scalatest.tools.Runner")
     args = listOf("-R", "$buildDir/classes/scala/test", "-o")
     classpath = sourceSets.test.get().runtimeClasspath
     dependsOn(tasks.testClasses)

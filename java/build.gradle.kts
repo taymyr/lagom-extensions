@@ -64,7 +64,7 @@ sourceSets.test {
 }
 
 configurations {
-    testCompile.get().extendsFrom(compileOnly.get())
+    testImplementation.get().extendsFrom(compileOnly.get())
 }
 
 ktlint {
