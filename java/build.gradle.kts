@@ -6,6 +6,7 @@ import java.net.URL
 
 plugins {
     kotlin("jvm")
+    kotlin("plugin.serialization")
     id("org.jetbrains.dokka") version Versions.dokka
     id("org.jlleitschuh.gradle.ktlint") version Versions.`ktlint-plugin`
     `maven-publish`
@@ -40,6 +41,7 @@ dependencies {
     compileOnly("com.lightbend.lagom", "lagom-cluster-core_$scalaBinaryVersion", lagomVersion)
     compileOnly("org.pac4j", "lagom-pac4j_$scalaBinaryVersion", Versions.lagomPac4j)
     compileOnly("org.jetbrains.kotlinx", "kotlinx-coroutines-jdk8", Versions.`kotlinx-coroutines`)
+    compileOnly("org.jetbrains.kotlinx", "kotlinx-serialization-json", Versions.`kotlinx-serialization`)
     compileOnly("com.typesafe.play", "play-cache_$scalaBinaryVersion", playVersion)
     implementation(project(":lagom-extensions-core"))
 
@@ -53,6 +55,7 @@ dependencies {
     testImplementation("com.lightbend.lagom", "lagom-javadsl-integration-client_$scalaBinaryVersion", lagomVersion)
     testImplementation("com.typesafe.play", "play-akka-http-server_$scalaBinaryVersion", playVersion)
     testImplementation("com.typesafe.play", "play-caffeine-cache_$scalaBinaryVersion", playVersion)
+    testImplementation("com.willowtreeapps.assertk", "assertk-jvm", Versions.assertk)
 }
 
 sourceSets.main {

@@ -2,6 +2,7 @@
 object Versions {
     const val kotlin = "1.7.10"
     const val `kotlinx-coroutines` = "1.6.4"
+    const val `kotlinx-serialization` = "1.4.0"
     const val scalaBinary = "2.13"
     const val akkaStreamKafka = "2.0.5"
     const val lagom = "1.6.4"
@@ -20,4 +21,5 @@ object Versions {
     const val scalatest = "3.1.1"
     const val jgitver = "0.9.1"
     const val `play-redis-cache` = "2.7.0"
+    const val assertk = "0.25"
 }

@@ -3,6 +3,7 @@ import java.time.Duration
 
 plugins {
     kotlin("jvm") version Versions.kotlin apply false
+    kotlin("plugin.serialization") version Versions.kotlin apply false
     id("io.github.gradle-nexus.publish-plugin") version Versions.`publish-plugin`
     id("fr.brouillard.oss.gradle.jgitver") version Versions.jgitver
     jacoco
