@@ -32,19 +32,9 @@ nexusPublishing {
     }
 }
 
-val jacocoAggregateMerge by tasks.creating(JacocoMerge::class) {
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-    executionData(
-        project(":lagom-extensions-java").buildDir.absolutePath + "/jacoco/test.exec"
-    )
-    dependsOn(
-        ":lagom-extensions-java:test"
-    )
-}
-
 val jacocoAggregateReport by tasks.creating(JacocoReport::class) {
     group = LifecycleBasePlugin.VERIFICATION_GROUP
-    executionData(jacocoAggregateMerge.destinationFile)
+    executionData(project(":lagom-extensions-java").buildDir.absolutePath + "/jacoco/test.exec")
     reports {
         xml.required.set(true)
     }
@@ -54,7 +44,7 @@ val jacocoAggregateReport by tasks.creating(JacocoReport::class) {
     additionalSourceDirs(files(subprojects.flatMap { project ->
         listOf("scala", "kotlin", "kotlin-2.13").map { project.file("src/main/$it").absolutePath }
     }))
-    dependsOn(jacocoAggregateMerge)
+    dependsOn(":lagom-extensions-java:test")
 }
 
 tasks.check { finalizedBy(jacocoAggregateReport) }
