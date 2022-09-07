@@ -90,23 +90,24 @@ val sourcesJar by tasks.creating(Jar::class) {
 val dokkaJar by tasks.creating(Jar::class) {
     group = JavaBasePlugin.DOCUMENTATION_GROUP
     archiveClassifier.set("javadoc")
-    from(tasks.dokka)
+    from(tasks.dokkaJavadoc)
 }
 
-tasks.dokka {
-    outputFormat = "javadoc"
-    outputDirectory = "$buildDir/javadoc"
-    configuration {
-        jdkVersion = 8
-        reportUndocumented = false
-        externalDocumentationLink {
-            url = URL("https://www.lagomframework.com/documentation/1.6.x/java/api/")
-        }
-        externalDocumentationLink {
-            url = URL("https://static.javadoc.io/com.google.guava/guava/26.0-jre/")
+tasks.dokkaJavadoc.configure {
+    outputDirectory.set(buildDir.resolve("javadoc"))
+    dokkaSourceSets {
+        configureEach {
+            jdkVersion.set(8)
+            reportUndocumented.set(false)
+            externalDocumentationLink {
+                url.set(URL("https://www.lagomframework.com/documentation/1.6.x/java/api/"))
+            }
+            externalDocumentationLink {
+                url.set(URL("https://static.javadoc.io/com.google.guava/guava/26.0-jre/"))
+            }
+            displayName.set("JVM")
         }
     }
-    impliedPlatforms = mutableListOf("JVM")
 }
 
 publishing {
