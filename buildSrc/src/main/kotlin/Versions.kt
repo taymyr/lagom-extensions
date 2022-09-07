@@ -15,7 +15,7 @@ object Versions {
     const val `kafka-junit5` = "3.1.0"
     const val kafka = "2.4.1"
     const val `publish-plugin` = "1.1.0"
-    const val dokka = "0.10.1"
+    const val dokka = "1.7.10"
     const val `scalafmt-plugin` = "1.16.2"
     const val scalatest = "3.1.1"
     const val jgitver = "0.9.1"
