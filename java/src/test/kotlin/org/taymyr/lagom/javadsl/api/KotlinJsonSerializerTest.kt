@@ -8,6 +8,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.taymyr.lagom.javadsl.api.KotlinJsonSerializer.Companion.serializer
 import org.taymyr.lagom.javadsl.api.transport.MessageProtocols.JSON
 import kotlin.random.Random
 
@@ -23,6 +24,9 @@ class KotlinJsonSerializerTest {
         val nullableType: Double?
     )
 
+    @Serializable
+    data class GenericTest<T>(val value: T, val temp: Int = Random.nextInt())
+
     data class WithoutSerializable(val temp: Int = Random.nextInt())
 
     private fun testMessage(nullableType: Double? = Random.nextDouble()) = TestMessage(
@@ -36,7 +40,7 @@ class KotlinJsonSerializerTest {
 
     @Test
     fun testSerialize() {
-        val serializer = KotlinJsonSerializer<TestMessage>(Json, TestMessage::class.java)
+        val serializer = serializer<TestMessage>(Json)
 
         var message = testMessage()
         var json = serializer.serializerForRequest().serialize(message).decodeString(Charsets.UTF_8)
@@ -48,8 +52,20 @@ class KotlinJsonSerializerTest {
     }
 
     @Test
+    fun testGenericSerialize() {
+        val serializer = serializer<GenericTest<TestMessage>>(Json)
+
+        val message = GenericTest(testMessage())
+        var json = serializer.serializerForRequest().serialize(message).decodeString(Charsets.UTF_8)
+        assertThat(json).isEqualTo(Json.encodeToString(message))
+
+        json = serializer.serializerForResponse(emptyList()).serialize(message).decodeString(Charsets.UTF_8)
+        assertThat(json).isEqualTo(Json.encodeToString(message))
+    }
+
+    @Test
     fun testDeserialize() {
-        val serializer = KotlinJsonSerializer<TestMessage>(Json, TestMessage::class.java)
+        val serializer = serializer<TestMessage>(Json)
 
         var expected = testMessage()
         var json = Json.encodeToString(expected)
@@ -63,13 +79,27 @@ class KotlinJsonSerializerTest {
     }
 
     @Test
+    fun testGenericDeserialize() {
+        val serializer = serializer<GenericTest<TestMessage>>(Json)
+
+        val expected = GenericTest(testMessage())
+        val json = Json.encodeToString(expected)
+        val actual = serializer.deserializer(JSON).deserialize(ByteString.fromString(json))
+        assertThat(actual).isEqualTo(expected)
+    }
+
+    @Test
     fun testSerializeWithoutSerializable() {
         assertThrows<IllegalArgumentException > {
-            val serializer = KotlinJsonSerializer<WithoutSerializable>(Json, WithoutSerializable::class.java)
+            val serializer = serializer<WithoutSerializable>(Json)
             serializer.serializerForRequest().serialize(WithoutSerializable())
         }
         assertThrows<IllegalArgumentException > {
-            val serializer = KotlinJsonSerializer<WithoutSerializable>(Json, WithoutSerializable::class.java)
+            val serializer = serializer<GenericTest<WithoutSerializable>>(Json)
+            serializer.serializerForResponse(emptyList()).serialize(GenericTest(WithoutSerializable()))
+        }
+        assertThrows<IllegalArgumentException > {
+            val serializer = serializer<WithoutSerializable>(Json)
             val json = """{ "temp": 10 }"""
             serializer.deserializer(JSON).deserialize(ByteString.fromString(json))
         }

@@ -235,7 +235,11 @@ Supported cache implementations:
 ### Json-serializer that uses kotlinx-serialization (Java &#10007; / Scala &#10007; / Kotlin &#10003;)
 Using `KotlinJsonSerializer` you can serialize/deserialize service responses using [kotlinx-serialization](https://github.com/Kotlin/kotlinx.serialization).
 Serializable classes must be annotated with `kotlinx.serialization.Serializable`, otherwise `IllegalArgumentException` exception will be thrown when the service starts.
-If you are using the `KotlinJsonSerializerFactory` in descriptor, then all service request/response classes must be annotated with `kotlinx.serialization.Serializable`.
+For create `KotlinJsonSerializer`, you need to use the function `KotlinJsonSerializer.serializer`.
+To set the message serializer, you need to use the extension function `withKotlinJsonSerializer` for `Descriptor`.
+But this function is not intended for parameterized types, since Lagom will use one serializer for all variants.
+Therefore, using `withKotlinJsonSerializer` with parameterized types will throw an `UnsupportedOperationException`.
+For parameterized types(and not only), you need to use the extension functions `withRequestKotlinJsonSerializer`, `withResponseKotlinJsonSerializer` for `Descriptor.Call`.
 
 Example:
 ```kotlin
@@ -244,9 +248,17 @@ data class TestData(
     val field1: String,
     val field2: Int
 )
+
+@Serializable
+data class TestGenericData<T>(val data: T)
+
+val json = Json { ignoreUnknownKeys = true }
+
 interface TestService : Service {
 
     fun testSerialization(): ServiceCall<TestData, TestData>
+
+    fun testGenericSerialization(): ServiceCall<TestGenericData<TestData>, TestGenericData<TestData>>
 
     override fun descriptor(): Descriptor = named("test-service").withCalls(
         restCall<TestData, TestData>(
@@ -254,14 +266,15 @@ interface TestService : Service {
             "/api/test/serialization",
             TestService::testSerialization.javaMethod
         ),
-    ) .withMessageSerializer(TestData::class.java,
-        KotlinJsonSerializer(
-            Json { ignoreUnknownKeys = true },
-            TestData::class.java
-        )
-    )
-//        .withSerializerFactory(KotlinJsonSerializerFactory ()) or use factory for all methods
+        restCall<TestGenericData<TestData>, TestGenericData<TestData>>(
+            Method.POST,
+            "/api/test/serialization/generic",
+            TestService::testGenericSerialization.javaMethod
+        ).withRequestKotlinJsonSerializer(json)
+            .withResponseKotlinJsonSerializer(json),
+    ).withKotlinJsonSerializer<TestData>(json)
 }
+
 ```
 
 ## How to use
