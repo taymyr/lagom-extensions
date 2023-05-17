@@ -1,0 +1,66 @@
+name: Publish Snapshots
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  # Run Gradle Wrapper Validation to verify the wrapper's checksum
+  gradle-validation:
+    name: Gradle Wrapper
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'taymyr'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          # we don't know what commit the last tag was
+          fetch-depth: 0
+
+      - name: Gradle Wrapper Validation
+        uses: gradle/wrapper-validation-action@v1
+
+  publish-artifacts:
+    name: Publish Artifacts for Scala ${{ matrix.scala }}
+    runs-on: ubuntu-latest
+    if: github.repository_owner == 'taymyr'
+    needs: gradle-validation
+    strategy:
+      matrix:
+        include:
+          - scala: "2.12"
+            lagom: "1.5.5"
+            play: "2.7.4"
+          - scala: "2.13"
+            lagom: "1.6.4"
+            play: "2.8.2"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          # we don't know what commit the last tag was
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'liberica'
+          java-version: '8'
+          check-latest: true
+          cache: 'gradle'
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
+      - name: Publish Snapshots
+        run: >-
+          ./gradlew --no-daemon version publishToSonatype -x test
+          -PscalaBinaryVersion=${{ matrix.scala }} -PlagomVersion=${{ matrix.lagom }} -PplayVersion=${{ matrix.play }}
+          -Psigning.gnupg.keyName=$GPG_KEY_ID
+          -Psigning.gnupg.passphrase="$GPG_PASSPHRASE"
+          -PsonatypeUsername="$OSSRH_USERNAME"
+          -PsonatypePassword="$OSSRH_TOKEN"
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          OSSRH_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          OSSRH_TOKEN: ${{ secrets.OSSRH_TOKEN }}
