@@ -206,6 +206,28 @@ class TestService @Inject constructor(actorSystem: ActorSystem) : Service, Corou
     }
 }
 ```
+It is also possible to set the coroutine context. To do this, you need to override the value of the `context` property.
+This allows you to set `CoroutineContext.Element`.
+Example of changing the name of a coroutine:
+```kotlin
+class TestService @Inject constructor(actorSystem: ActorSystem) : Service, CoroutineService {
+    
+    override val dispatcher: CoroutineDispatcher = actorSystem.dispatcher.asCoroutineDispatcher()
+
+    override val context: CoroutineContext = CoroutineName("custom-coroutine-name")
+
+    private fun testMethod(): ServiceCall<NotUsed, String> = serviceCall {
+        "Hello, from coroutine!"
+    }
+
+    override fun descriptor(): Descriptor {
+        return Service.named("test-service")
+            .withCalls(
+                Service.restCall<NotUsed, String>(Method.GET, "/test", TestService::testMethod.javaMethod)
+            )
+    }
+}
+```
 ### The Cache API using coroutines (Java &#10007; / Scala &#10007; / Kotlin &#10003;)
 
 `org.taymyr.lagom.kotlindsl.cache.AsyncCacheApi` allows using methods from `play.cache.AsyncCacheApi` along with suspend functions.

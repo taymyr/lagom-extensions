@@ -9,15 +9,25 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.future.future
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Starts new coroutine on threads from [CoroutineDispatcher] and returns its result as an implementation of [ServiceCall].
  *
  * @property dispatcher determines what thread or threads the corresponding coroutine uses for its execution.
+ * @property context provides the ability to set the execution context of a coroutine, such as setting [CoroutineContext.Element].
+ * If the value is null, the property is not used.
  */
 interface CoroutineService {
 
     val dispatcher: CoroutineDispatcher
+
+    val context: CoroutineContext
+        get() = EmptyCoroutineContext
+
+    private val callContext: CoroutineContext
+        get() = dispatcher + context
 
     /**
      * Starts new coroutine and returns its result as an implementation of [ServiceCall].
@@ -29,7 +39,7 @@ interface CoroutineService {
         start: CoroutineStart = CoroutineStart.DEFAULT,
         block: suspend CoroutineScope.(request: Request) -> Response
     ) = ServiceCall<Request, Response> {
-        CoroutineScope(dispatcher).future(start = start) {
+        CoroutineScope(callContext).future(start = start) {
             block(it)
         }
     }
@@ -44,7 +54,7 @@ interface CoroutineService {
         start: CoroutineStart = CoroutineStart.DEFAULT,
         block: suspend CoroutineScope.(request: Request) -> Response
     ) = ServerServiceCall<Request, Response> {
-        CoroutineScope(dispatcher).future(start = start) {
+        CoroutineScope(callContext).future(start = start) {
             block(it)
         }
     }
@@ -59,7 +69,7 @@ interface CoroutineService {
         start: CoroutineStart = CoroutineStart.DEFAULT,
         block: suspend CoroutineScope.(requestHeader: RequestHeader, request: Request) -> akka.japi.Pair<ResponseHeader, Response>
     ) = HeaderServiceCall<Request, Response> { requestHeader, request ->
-        CoroutineScope(dispatcher).future(start = start) {
+        CoroutineScope(callContext).future(start = start) {
             block(requestHeader, request)
         }
     }

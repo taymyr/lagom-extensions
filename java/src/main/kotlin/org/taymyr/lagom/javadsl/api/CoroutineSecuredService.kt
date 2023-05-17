@@ -17,7 +17,7 @@ interface CoroutineSecuredService : SecuredService, CoroutineService {
      * Starts new coroutine with authorized and returns its result as an implementation of [ServerServiceCall].
      *
      * @param start coroutine start option. The default value is [CoroutineStart.DEFAULT].
-     * @param block he coroutine code.
+     * @param block the coroutine code.
      */
     fun <Request, Response> authorizedServiceCall(
         start: CoroutineStart = CoroutineStart.DEFAULT,
@@ -30,7 +30,7 @@ interface CoroutineSecuredService : SecuredService, CoroutineService {
      * Starts new coroutine with authorized and returns its result as an implementation of [ServerServiceCall].
      *
      * @param start coroutine start option. The default value is [CoroutineStart.DEFAULT].
-     * @param block he coroutine code.
+     * @param block the coroutine code.
      */
     fun <Request, Response> authorizedHeaderServiceCall(
         start: CoroutineStart = CoroutineStart.DEFAULT,
@@ -46,7 +46,7 @@ interface CoroutineSecuredService : SecuredService, CoroutineService {
      * If authentication is failed, the profile will be an instance of [AnonymousProfile].
      *
      * @param start coroutine start option. The default value is [CoroutineStart.DEFAULT].
-     * @param block he coroutine code.
+     * @param block the coroutine code.
      */
     fun <Request, Response> authenticatedServiceCall(
         start: CoroutineStart = CoroutineStart.DEFAULT,
@@ -60,7 +60,7 @@ interface CoroutineSecuredService : SecuredService, CoroutineService {
      * If authentication is failed, the profile will be an instance of [AnonymousProfile].
      *
      * @param start coroutine start option. The default value is [CoroutineStart.DEFAULT].
-     * @param block he coroutine code.
+     * @param block the coroutine code.
      */
     fun <Request, Response> authenticatedHeaderServiceCall(
         start: CoroutineStart = CoroutineStart.DEFAULT,
