@@ -1,8 +1,5 @@
 package org.taymyr.lagom.ws
 
-import java.util.UUID
-import java.util.UUID.randomUUID
-
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import play.api.libs.ws.StandaloneWSResponse
@@ -11,15 +8,23 @@ import play.api.libs.ws.WSRequestFilter
 import play.api.libs.ws.ahc.CurlFormat
 import play.api.libs.ws.ahc.StandaloneAhcWSRequest
 
+import java.util.UUID
+import java.util.UUID.randomUUID
 import scala.concurrent.ExecutionContext
 
-class AhcRequestResponseLogger(logger: Logger)(implicit ec: ExecutionContext) extends WSRequestFilter with CurlFormat {
+class AhcRequestResponseLogger(loggingSettings: LoggingSettings, logger: Logger)(implicit ec: ExecutionContext)
+    extends WSRequestFilter
+    with CurlFormat {
 
-  override def apply(executor: WSRequestExecutor): WSRequestExecutor = {
-    WSRequestExecutor { request =>
-      val eventualResponse = executor(request)
-      val correlationId    = randomUUID()
-      val url              = logRequest(request.asInstanceOf[StandaloneAhcWSRequest], correlationId)
+  override def apply(executor: WSRequestExecutor): WSRequestExecutor = WSRequestExecutor { request =>
+    val eventualResponse = executor(request)
+    val correlationId    = randomUUID()
+    val r                = request.asInstanceOf[StandaloneAhcWSRequest]
+    val url              = r.buildRequest().getUrl
+    if (loggingSettings.skipUrls.exists { _.findFirstIn(url).nonEmpty }) {
+      eventualResponse
+    } else {
+      logRequest(r, url, correlationId)
       eventualResponse.map { response =>
         logResponse(response, url, correlationId)
         response
@@ -27,15 +32,13 @@ class AhcRequestResponseLogger(logger: Logger)(implicit ec: ExecutionContext) ex
     }
   }
 
-  private def logRequest(request: StandaloneAhcWSRequest, correlationId: UUID): String = {
-    val url = request.buildRequest().getUrl
-    val sb  = new StringBuilder(s"Request to $url")
+  private def logRequest(request: StandaloneAhcWSRequest, url: String, correlationId: UUID): Unit = {
+    val sb = new StringBuilder(s"Request to $url")
     sb.append("\n")
       .append(s"Request correlation ID: $correlationId")
       .append("\n")
       .append(toCurl(request))
     logger.info(sb.toString())
-    url
   }
 
   private def logResponse(response: StandaloneWSResponse, url: String, correlationId: UUID): Unit = {
@@ -84,11 +87,9 @@ object AhcRequestResponseLogger {
 
   private val logger = LoggerFactory.getLogger("org.taymyr.lagom.ws.AhcRequestResponseLogger")
 
-  def apply()(implicit ec: ExecutionContext): AhcRequestResponseLogger = {
-    new AhcRequestResponseLogger(logger)
-  }
+  def apply(loggingSettings: LoggingSettings)(implicit ec: ExecutionContext): AhcRequestResponseLogger =
+    new AhcRequestResponseLogger(loggingSettings, logger)
 
-  def apply(logger: Logger)(implicit ec: ExecutionContext): AhcRequestResponseLogger = {
-    new AhcRequestResponseLogger(logger)
-  }
+  def apply(loggingSettings: LoggingSettings, logger: Logger)(implicit ec: ExecutionContext): AhcRequestResponseLogger =
+    new AhcRequestResponseLogger(loggingSettings, logger)
 }
