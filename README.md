@@ -161,6 +161,10 @@ It allows you to enable request/response (including the body) logging. It can be
 ```hocon
 configured-ahc-ws-client.logging.enabled = true
 ```
+Also, you can exclude some URLs by specifying a list of matching regexps.
+```hocon
+configured-ahc-ws-client.logging.skip-urls = ["(foo|bar)\\.acme\\.com/some/path"]
+```
 Enjoy!
 
 ### ServiceCall running on coroutines (Java &#10007; / Scala &#10007; / Kotlin &#10003;)
