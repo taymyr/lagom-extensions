@@ -165,6 +165,24 @@ Also, you can exclude some URLs by specifying a list of matching regexps.
 ```hocon
 configured-ahc-ws-client.logging.skip-urls = ["(foo|bar)\\.acme\\.com/some/path"]
 ```
+In addition, you can customize which request/response elements are logged by default.
+```hocon
+configured-ahc-ws-client.logging.default-preset {
+  request-elements = ["curl"]
+  response-elements = ["body", "headers", "cookies"]
+}
+```
+And you can customize the behavior for specific URLs.
+```hocon
+configured-ahc-ws-client.logging.presets = [
+  {
+    request-elements = ["curl"]
+    response-elements = ["headers", "cookies"]
+    # list of regexp patterns of URLs (like a skip-urls)
+    urls = ["/foo/([^/][0-9]+)/bar"]
+  }
+]
+```
 Enjoy!
 
 ### ServiceCall running on coroutines (Java &#10007; / Scala &#10007; / Kotlin &#10003;)
