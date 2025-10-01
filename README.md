@@ -324,21 +324,22 @@ libraryDependencies += "org.taymyr.lagom" %% "lagom-extensions-java" % "X.Y.Z"
 </dependency>
 ```
 
-All **snapshot** artifacts are available in the [Sonatype snapshots repository](https://oss.sonatype.org/content/repositories/snapshots/org/taymyr/lagom).
+All **snapshot** artifacts are available in the [Central Portal Snapshots](https://central.sonatype.com/repository/maven-snapshots/org/taymyr/lagom).
 This repository must be added in your build system. 
 
 * **SBT**
 
 ```scala
-resolvers ++= Resolver.sonatypeRepo("snapshots")
+resolvers += Resolver.sonatypeCentralSnapshots
 ```
 
 * **Maven**
 ```xml
 <repositories>
   <repository>
-    <id>snapshots-repo</id>
-    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    <name>Central Portal Snapshots</name>
+    <id>central-portal-snapshots</id>
+    <url>https://central.sonatype.com/repository/maven-snapshots/</url>
     <releases><enabled>false</enabled></releases>
     <snapshots><enabled>true</enabled></snapshots>
   </repository>
@@ -351,7 +352,7 @@ Contributions are very welcome.
 
 ## License
 
-Copyright © 2018-2020 Digital Economy League (https://www.digitalleague.ru/).
+Copyright © 2018-2025 Digital Economy League (https://www.digitalleague.ru/).
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this project except in compliance with the License. You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0.
 
