@@ -35,9 +35,11 @@ object ConfiguredAhcWSClient {
 
 case class LoggingSettings(
     enabled: Boolean,
+    requestResponseCombined: Boolean,
     skipUrls: Seq[Regex],
     defaultPreset: LoggingPreset,
-    presets: Seq[LoggingPreset]
+    presets: Seq[LoggingPreset],
+    mdc: Mdc
 )
 
 case class LoggingPreset(
@@ -46,13 +48,31 @@ case class LoggingPreset(
     urls: Seq[Regex]
 )
 
+case class Mdc(
+    defaultPreset: MdcPreset,
+    presets: Seq[MdcPreset],
+    nameMappings: Map[String, String],
+    namePrefix: String
+)
+
+case class MdcPreset(
+    urls: Seq[Regex],
+    fields: Seq[String],
+    requestBodyMaxBytes: Option[Int],
+    responseBodyMaxBytes: Option[Int]
+) {
+  val enabled: Boolean = fields.nonEmpty
+}
+
 object LoggingSettings {
 
   def apply(config: Config): LoggingSettings = LoggingSettings(
     config.getBoolean("enabled"),
+    config.getBoolean("request-response-combined"),
     buildStrings(config, "skip-urls").map { _.r },
     buildDefaultPreset(config),
     buildPresets(config),
+    buildMdc(config.getConfig("mdc"))
   )
 
   def buildDefaultPreset(config: Config): LoggingPreset = {
@@ -85,5 +105,42 @@ object LoggingSettings {
       .filter { s =>
         s != null && s.nonEmpty
       }
+  }
+
+  def buildMdc(config: Config): Mdc = {
+    Mdc(
+      defaultPreset = buildMdcPreset(config.getConfig("default-preset"), isDefault = true),
+      presets = buildMdcPresets(config),
+      nameMappings = config
+        .getObject("name-mappings")
+        .keySet()
+        .asScala
+        .map { key =>
+          key -> config.getString("name-mappings." + key)
+        }
+        .toMap,
+      namePrefix = config.getString("name-prefix")
+    )
+  }
+
+  def buildMdcPreset(config: Config, isDefault: Boolean): MdcPreset = {
+    MdcPreset(
+      fields = buildStrings(config, "fields"),
+      requestBodyMaxBytes = if (config.hasPath("request-body-max-bytes")) {
+        Option(config.getInt("request-body-max-bytes"))
+      } else Option.empty,
+      responseBodyMaxBytes = if (config.hasPath("response-body-max-bytes")) {
+        Option(config.getInt("response-body-max-bytes"))
+      } else Option.empty,
+      urls = if (isDefault) Seq.empty[Regex] else buildStrings(config, "urls").map { _.r }
+    )
+  }
+
+  def buildMdcPresets(config: Config): Seq[MdcPreset] = {
+    config
+      .getConfigList("presets")
+      .asScala
+      .map { buildMdcPreset(_, isDefault = false) }
+      .toSeq
   }
 }
