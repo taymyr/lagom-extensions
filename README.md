@@ -183,6 +183,24 @@ configured-ahc-ws-client.logging.presets = [
   }
 ]
 ```
+And you can customize the behavior for specific http response code.
+```hocon
+configured-ahc-ws-client.logging.presets = [
+  {
+    request-elements = ["curl"]
+    # do not log body when http response code is 200
+    response-elements = ["headers", "cookies"]
+    urls = ["/foo/bar1"]
+    http-codes = [200]
+  }
+  {
+    request-elements = ["curl"]
+    # log body when http response code is any other than 200
+    response-elements = ["body", "headers", "cookies"]
+    urls = ["/foo/bar1"]
+  }
+]
+```
 By default, the logger writes two separate messages (one for the request and one for the response).
 You can configure the logger to combine request and response into a single log entry containing both request and response details.
 ```hocon
