@@ -26,11 +26,20 @@ class AhcRequestResponseLogger(loggingSettings: LoggingSettings, logger: Logger)
     if (loggingSettings.skipUrls.exists { _.findFirstIn(url).nonEmpty }) {
       eventualResponse
     } else {
-      val preset = loggingSettings.presets
-        .find { _.urls.exists { _.findFirstIn(url).nonEmpty } }
-        .getOrElse(loggingSettings.defaultPreset)
-      logRequest(r, url, correlationId, preset)
       eventualResponse.map { response =>
+        val httpStatus = response.status
+        val preset = loggingSettings.presets
+          .find { p =>
+            p.urls.exists { _.findFirstIn(url).nonEmpty } && p.httpCodes.contains(httpStatus)
+          }
+          .getOrElse(
+            loggingSettings.presets
+              .find { pr =>
+                pr.urls.exists { _.findFirstIn(url).nonEmpty } && pr.httpCodes.isEmpty
+              }
+              .getOrElse(loggingSettings.defaultPreset)
+          )
+        logRequest(r, url, correlationId, preset)
         logResponse(response, url, correlationId, preset)
         response
       }

@@ -43,6 +43,7 @@ case class LoggingSettings(
 case class LoggingPreset(
     requestElements: Seq[String],
     responseElements: Seq[String],
+    httpCodes: Seq[Int],
     urls: Seq[Regex]
 )
 
@@ -59,6 +60,7 @@ object LoggingSettings {
     LoggingPreset(
       requestElements = buildStrings(config, "default-preset.request-elements"),
       responseElements = buildStrings(config, "default-preset.response-elements"),
+      httpCodes = Seq.empty[Int],
       urls = Seq.empty[Regex]
     )
   }
@@ -71,6 +73,7 @@ object LoggingSettings {
         LoggingPreset(
           requestElements = buildStrings(cfg, "request-elements"),
           responseElements = buildStrings(cfg, "response-elements"),
+          httpCodes = buildInts(cfg, "http-codes"),
           urls = buildStrings(cfg, "urls").map { _.r }
         )
       }
@@ -85,5 +88,17 @@ object LoggingSettings {
       .filter { s =>
         s != null && s.nonEmpty
       }
+  }
+
+  def buildInts(config: Config, param: String): Seq[Int] = {
+    if (config.hasPath(param)) {
+      config
+        .getIntList(param)
+        .asScala
+        .map(_.toInt)
+        .toSeq
+    } else {
+      Seq.empty[Int]
+    }
   }
 }
