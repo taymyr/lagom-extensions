@@ -38,27 +38,41 @@ class AhcRequestResponseLogger(loggingSettings: LoggingSettings, logger: Logger)
     if (loggingSettings.skipUrls.exists { _.findFirstIn(url).nonEmpty }) {
       eventualResponse
     } else {
-      val preset = loggingSettings.presets
-        .find { _.urls.exists { _.findFirstIn(url).nonEmpty } }
-        .getOrElse(loggingSettings.defaultPreset)
       val mdc = loggingSettings.mdc.presets
         .find { _.urls.exists { _.findFirstIn(url).nonEmpty } }
         .getOrElse(loggingSettings.mdc.defaultPreset)
       if (loggingSettings.requestResponseCombined) {
         eventualResponse.map { response =>
           val durationMs = (System.nanoTime() - startTime) / 1000000
-          logRequestResponseCombined(r, response, url, correlationId, durationMs, preset, mdc)
+          logRequestResponseCombined(r, response, url, correlationId, durationMs, findPreset(response, url), mdc)
           response
         }
       } else {
-        logRequest(r, r.method, url, correlationId, preset, mdc)
         eventualResponse.map { response =>
+          val preset = findPreset(response, url)
+          logRequest(r, r.method, url, correlationId, preset, mdc)
           val durationMs = (System.nanoTime() - startTime) / 1000000
           logResponse(response, r.method, url, correlationId, durationMs, preset, mdc)
           response
         }
       }
     }
+  }
+
+  private def findPreset(response: StandaloneWSResponse, url: String): LoggingPreset = {
+    val httpStatus = response.status
+    val preset = loggingSettings.presets
+      .find { p =>
+        p.urls.exists { _.findFirstIn(url).nonEmpty } && p.httpCodes.contains(httpStatus)
+      }
+      .getOrElse(
+        loggingSettings.presets
+          .find { pr =>
+            pr.urls.exists { _.findFirstIn(url).nonEmpty } && pr.httpCodes.isEmpty
+          }
+          .getOrElse(loggingSettings.defaultPreset)
+      )
+    preset
   }
 
   private def logRequest(
