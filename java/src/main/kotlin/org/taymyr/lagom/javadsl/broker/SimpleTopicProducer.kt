@@ -16,6 +16,7 @@ import com.lightbend.lagom.javadsl.api.broker.kafka.PartitionKeyStrategy
 import com.typesafe.config.Config
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.clients.producer.RecordMetadata
+import org.apache.kafka.common.header.Header
 import org.apache.kafka.common.serialization.Serializer
 import org.apache.kafka.common.serialization.StringSerializer
 import scala.compat.java8.FutureConverters.toJava
@@ -27,7 +28,7 @@ import akka.kafka.scaladsl.`SendProducer$`.`MODULE$` as ScalaSendProducerCompani
 /**
  * Simple producer for publishing single records to the topic.
  *
- * @param T Type of a topic record
+ * @param T Type of topic record
  */
 class SimpleTopicProducer<T> internal constructor(
     serviceLocator: ServiceLocator,
@@ -39,7 +40,7 @@ class SimpleTopicProducer<T> internal constructor(
     config: Config
 ) {
     private val producerSettings: ProducerSettings<String, T>
-    private val queue: SourceQueueWithComplete<T>
+    private val queue: SourceQueueWithComplete<ProducerRecord<String, T>>
     private val topicName: String
 
     init {
@@ -95,8 +96,7 @@ class SimpleTopicProducer<T> internal constructor(
         val topicNameConfigPath = "${topicId.value()}.topic-name"
         topicName = if (config.hasPath(topicNameConfigPath)) config.getString(topicNameConfigPath)!! else topicId.value()
 
-        queue = Source.queue<T>(bufferSize, overflowStrategy)
-            .map { toProducerRecord(it) }
+        queue = Source.queue<ProducerRecord<String, T>>(bufferSize, overflowStrategy)
             .to(RestartSink.withBackoff(minBackoff, maxBackoff, randomFactor) { Producer.plainSink(this.producerSettings) })
             .run(materializer)
     }
@@ -105,8 +105,18 @@ class SimpleTopicProducer<T> internal constructor(
         ScalaSendProducerCompanion.apply(producerSettings, actorSystem)
     }
 
-    private fun toProducerRecord(data: T) =
-        ProducerRecord<String, T>(topicName, partitionKeyStrategy?.computePartitionKey(data), data)
+    private fun toProducerRecord(
+        partition: Int? = null,
+        key: String? = null,
+        data: T,
+        headers: Iterable<Header>? = null
+    ) = ProducerRecord<String, T>(
+        topicName,
+        partition,
+        key ?: partitionKeyStrategy?.computePartitionKey(data),
+        data,
+        headers
+    )
 
     /**
      * Enqueues an entity to be further published to the topic.
@@ -120,15 +130,47 @@ class SimpleTopicProducer<T> internal constructor(
      * Enqueues an entity to be further published to the topic.
      *
      * @param data An entity to publish to the topic
+     * @param partition The partition to which the record should be sent
+     * @param key The key that will be included in the record
+     * @param headers The headers that will be included in the record
      */
-    fun enqueue(data: T): CompletionStage<QueueOfferResult> = queue.offer(data)
+    @JvmOverloads
+    fun enqueue(
+        data: T,
+        partition: Int? = null,
+        key: String? = null,
+        headers: Iterable<Header>? = null
+    ): CompletionStage<QueueOfferResult> = queue.offer(
+        toProducerRecord(
+            partition = partition,
+            key = key,
+            data = data,
+            headers = headers
+        )
+    )
 
     /**
      * Publishes an entity to the topic using [SendProducer.send].
      *
      * @param data An entity to publish to the topic
+     * @param partition The partition to which the record should be sent
+     * @param key The key that will be included in the record
+     * @param headers The headers that will be included in the record
      */
-    fun send(data: T): CompletionStage<RecordMetadata> = toJava(
-        sendProducer.send(toProducerRecord(data))
+    @JvmOverloads
+    fun send(
+        data: T,
+        partition: Int? = null,
+        key: String? = null,
+        headers: Iterable<Header>? = null
+    ): CompletionStage<RecordMetadata> = toJava(
+        sendProducer.send(
+            toProducerRecord(
+                partition = partition,
+                key = key,
+                data = data,
+                headers = headers
+            )
+        )
     )
 }
