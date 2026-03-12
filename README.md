@@ -183,8 +183,101 @@ configured-ahc-ws-client.logging.presets = [
   }
 ]
 ```
+By default, the logger writes two separate messages (one for the request and one for the response).
+You can configure the logger to combine request and response into a single log entry containing both request and response details.
+```hocon
+configured-ahc-ws-client.logging.combine-request-response = true
+```
 Enjoy!
 
+### MDC context support
+
+The HTTP client logging supports populating the MDC (Mapped Diagnostic Context) with request and response data.
+
+#### Configuring MDC fields
+
+To define which fields are included in the MDC for each HTTP request/response,  
+use the `configured-ahc-ws-client.logging.mdc.default-preset.fields` setting.
+
+If the fields list is empty, no MDC data will be populated.
+
+#### Supported fields
+
+Fields are grouped by logical scope:
+
+- Common — added for both request and response phases.
+- Request — added only during the request phase, before the request is sent.
+- Response — added only during the response phase, after a response is received.
+
+| Scope        | Field name     | Description                                                   |
+|--------------|----------------|---------------------------------------------------------------|
+| **Common**   | correlation-id | Correlation UUID propagated across request and response.      |
+|              | method         | HTTP method (GET, POST, etc.).                                |
+|              | url            | Full request URL.                                             |
+| **Request**  | request-body   | Request body content (truncated by request-body-max-bytes).   |
+| **Response** | status-code    | HTTP status code.                                             |
+|              | duration-ms    | Total request duration in milliseconds.                       |
+|              | response-body  | Response body content (truncated by response-body-max-bytes). |
+
+#### Body size limits
+
+You can optionally control how much of the request and response body is stored in the MDC 
+using the `request-body-max-bytes` and `response-body-max-bytes` settings.
+
+These settings define the maximum number of bytes that will be added to the MDC for the request and response bodies. 
+If the content exceeds the limit, it is safely truncated.  
+The limits are only effective when the corresponding fields (`request-body` or `response-body`) are included in the`fields` list.
+
+#### Example:
+
+```hocon
+configured-ahc-ws-client.logging.mdc.default-preset {
+  fields = [correlation-id, url, request-body, response-body]
+  request-body-max-bytes = 2000
+  response-body-max-bytes = 2000
+}
+```
+
+#### URL-specific MDC presets
+
+In addition to default MDC configuration, you can define URL-specific presets that override default behaviour for certain endpoints.
+Each entry in `configured-ahc-ws-client.logging.mdc.presets` uses the same structure as `configured-ahc-ws-client.logging.mdc.default-preset`,
+but adds an extra field `urls` - a list of regular expressions to match request URLs.
+When a request URL matches any of the listed patterns, the corresponding preset overrides the default MDC configuration fot that request.
+
+Example:
+
+```hocon
+configured-ahc-ws-client.logging.mdc.presets = [
+  {
+    urls = ["/foo"]
+    fields = [correlation-id, request-body, response-body]
+    response-body-max-bytes = 200
+  }
+]
+```
+
+#### MDC key names
+
+To override (rename) default MDC key names in your logs, use the
+`configured-ahc-ws-client.logging.mdc.name-mappings` setting.
+
+#### Example:
+
+```hocon
+configured-ahc-ws-client.logging.mdc.name-mappings {
+   url = endpoint
+}
+```
+
+#### MDC key prefix
+
+To add a prefix to all MDC key names, use:
+
+```hocon
+configured-ahc-ws-client.logging.mdc.name-prefix = "http.client."
+```
+ 
 ### ServiceCall running on coroutines (Java &#10007; / Scala &#10007; / Kotlin &#10003;)
 Using `CoroutineService` you can make requests using coroutines.
 Example:
